@@ -1,0 +1,29 @@
+services:
+  load-tester:
+    build: .
+    ports:
+      - "127.0.0.1:${PORT:-8090}:8090"
+    environment:
+      LISTEN_ADDR: ":8090"
+      DATA_DIR: /data
+      RESULTS_VOLUME: ${RESULTS_VOLUME:-load-tester-data}
+      K6_NETWORK: ${K6_NETWORK:-load-tester}
+      K6_IMAGE: ${K6_IMAGE:-grafana/k6:1.4.2}
+    volumes:
+      - ${DOCKER_SOCKET:-/var/run/docker.sock}:/var/run/docker.sock
+      - results:/data
+    networks:
+      - testing
+    init: true
+    stop_grace_period: 45s
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8090/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+volumes:
+  results:
+    name: ${RESULTS_VOLUME:-load-tester-data}
+networks:
+  testing:
+    name: ${K6_NETWORK:-load-tester}

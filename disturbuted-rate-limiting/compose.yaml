@@ -1,0 +1,38 @@
+name: rate-limiter
+
+x-image: &image
+  image: rate-limiter:local
+  build:
+    context: .
+    target: runtime
+  read_only: true
+  cap_drop: [ALL]
+  security_opt: [no-new-privileges:true]
+  stop_grace_period: 10s
+
+services:
+  gateway:
+    <<: *image
+    ports:
+      - "127.0.0.1:${PROXY_PORT:-8088}:8080"
+    environment:
+      RATE_LIMIT_STORAGE: ram
+      RATE_LIMIT_UPSTREAM: ${RATE_LIMIT_UPSTREAM:-http://backend:8080}
+      RATE_LIMIT_NAMESPACE: ${RATE_LIMIT_NAMESPACE:-demo}
+      RATE_LIMIT_CREDENTIALS: ${RATE_LIMIT_CREDENTIALS:-[]}
+    volumes:
+      - ./configs/proxy.json:/etc/ratelimit/proxy.json:ro
+    depends_on:
+      backend:
+        condition: service_healthy
+
+  backend:
+    <<: *image
+    entrypoint: ["/demo-backend"]
+    command: []
+    healthcheck:
+      test: [CMD, /ratelimitd, -healthcheck, "http://127.0.0.1:8080/healthz"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    # No published port: traffic enters through the gateway.

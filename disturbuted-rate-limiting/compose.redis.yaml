@@ -1,0 +1,23 @@
+services:
+  gateway:
+    environment:
+      RATE_LIMIT_STORAGE: redis
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  redis:
+    image: redis:7.4-alpine
+    command: [redis-server, --appendonly, "yes", --maxmemory, 128mb, --maxmemory-policy, noeviction]
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: [CMD, redis-cli, ping]
+      interval: 2s
+      timeout: 2s
+      retries: 15
+    # No published Redis port. Applications use the private Compose network.
+
+volumes:
+  redis-data:
