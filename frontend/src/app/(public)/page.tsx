@@ -1,8 +1,6 @@
-export default function PublicPage() {
-  return (
-    <div>
-      <h1>Home</h1>
-    </div>
-  )
+import { DashboardContent } from './_components/DashboardContent'
+
+export default function DashboardPage() {
+  return <DashboardContent />
 }
 

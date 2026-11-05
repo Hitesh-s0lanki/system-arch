@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "listen": ":8080",
+  "upstream": "http://backend:8080",
+  "storage": {
+    "mode": "ram",
+    "namespace": "demo",
+    "timeout": "500ms"
+  },
+  "cleanup_interval": "1s",
+  "upstream_timeout": "10s",
+  "anonymous_tenant": "public",
+  "trusted_proxies": [],
+  "forward_authorization": false,
+  "routes": [
+    {
+      "pattern": "/",
+      "policy": { "id": "default-ip", "identity": "ip", "per_route": false },
+      "limit": 3,
+      "window": "10s",
+      "max_keys": 10000
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+.git
+.env
+*.log
+coverage*
+tmp/
+bin/
+.tmp-*/
+configs/credentials*.json
