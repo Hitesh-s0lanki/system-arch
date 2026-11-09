@@ -23,7 +23,7 @@ import (
 
 func policies() []sdk.Policy {
 	return []sdk.Policy{{
-		Policy: policy.Policy{ID: "users", Identity: identity.User},
+		Policy:      policy.Policy{ID: "users", Identity: identity.User},
 		FixedWindow: fixedwindow.Config{Limit: 3, Window: time.Hour, MaxKeys: 2},
 	}}
 }
