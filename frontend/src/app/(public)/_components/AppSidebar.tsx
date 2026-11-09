@@ -18,7 +18,7 @@ import {
   SidebarMenuSubButton,
   useSidebar,
 } from '@/components/ui/sidebar'
-import { ChevronDown, Gauge, HelpCircle, Zap } from 'lucide-react'
+import { ChevronDown, Gauge, HelpCircle, Play, Zap } from 'lucide-react'
 import { Logo } from '@/components/Logo'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
@@ -26,6 +26,11 @@ import { useState } from 'react'
 
 const systemDesignNav = [
   { label: 'Load Tester', icon: Gauge, href: '/system-design/load-tester' },
+  {
+    label: 'Video Streaming',
+    icon: Play,
+    href: '/system-design/video-streaming',
+  },
 ]
 
 export function AppSidebar() {
@@ -115,6 +120,7 @@ export function AppSidebar() {
                     aria-current={
                       pathname.startsWith(item.href) ? 'page' : undefined
                     }
+                    onClick={() => setOpenMobile(false)}
                     tooltip={item.label}
                     className="h-[30px] gap-2 rounded-md px-2 text-[13px] font-normal text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
                   >

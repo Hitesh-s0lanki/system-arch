@@ -43,10 +43,10 @@ const designs = [
     icon: Play,
     technologies: ['Java', 'Spring Boot', 'FFmpeg'],
     flow: ['Upload', 'Transcode', 'HLS playback'],
-    href: 'https://github.com/Hitesh-s0lanki/system-arch/tree/main/video-streaming-service',
-    action: 'View implementation',
-    external: true,
-    detail: 'Backend source and setup guide on GitHub',
+    href: '/system-design/video-streaming',
+    action: 'Explore video streaming',
+    external: false,
+    detail: 'StreamFlow overview, features, and live app',
   },
 ]
 

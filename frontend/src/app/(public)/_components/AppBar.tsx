@@ -24,6 +24,7 @@ import {
   HelpCircle,
   Activity,
   BookOpen,
+  Play,
 } from 'lucide-react'
 import { usePathname, useRouter } from 'next/navigation'
 
@@ -46,7 +47,9 @@ export function AppBar({ title = 'Overview', breadcrumb = [] }: AppBarProps) {
         ? 'Rate Limiter'
         : pathname.startsWith('/system-design/load-tester')
           ? 'Load Tester'
-          : title
+          : pathname.startsWith('/system-design/video-streaming')
+            ? 'Video Streaming / StreamFlow'
+            : title
 
   React.useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -139,6 +142,14 @@ export function AppBar({ title = 'Overview', breadcrumb = [] }: AppBarProps) {
             >
               <Gauge className="mr-2 h-4 w-4 text-muted-foreground" />
               <span>Load Tester</span>
+            </CommandItem>
+            <CommandItem
+              onSelect={() =>
+                runCommand(() => router.push('/system-design/video-streaming'))
+              }
+            >
+              <Play className="mr-2 h-4 w-4 text-muted-foreground" />
+              <span>Video Streaming StreamFlow</span>
             </CommandItem>
           </CommandGroup>
 
