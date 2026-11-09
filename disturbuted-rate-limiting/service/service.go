@@ -14,14 +14,20 @@ import (
 )
 
 var (
-	ErrUnknownPolicy  = errors.New("service: unknown policy")
-	ErrInvalidRequest = errors.New("service: invalid request identity")
+	ErrUnauthorizedTenant = errors.New("service: tenant is not provisioned")
+	ErrUnknownPolicy      = errors.New("service: unknown policy")
+	ErrInvalidRequest     = errors.New("service: invalid request identity")
 )
 
 // Limiter is the consumer's algorithm contract. Implementations must be safe for
 // concurrent use. Errors represent backend failures, not ordinary rejections.
 type Limiter interface {
 	Evaluate(context.Context, string) (ratelimit.Decision, error)
+}
+
+// TenantLimiter provides independently bounded storage for each trusted tenant.
+type TenantLimiter interface {
+	EvaluateTenant(context.Context, string, string) (ratelimit.Decision, error)
 }
 
 // Binding connects a policy to a non-nil limiter. Prefer a dedicated limiter per
@@ -112,6 +118,9 @@ func (s *Service) Check(ctx context.Context, policyID string, request Request) (
 	key, err := identity.Key(policyID, request.TenantID, subject, route)
 	if err != nil {
 		return ratelimit.Decision{}, fmt.Errorf("%w: %v", ErrInvalidRequest, err)
+	}
+	if scoped, ok := binding.Limiter.(TenantLimiter); ok {
+		return scoped.EvaluateTenant(ctx, request.TenantID, key)
 	}
 	return binding.Limiter.Evaluate(ctx, key)
 }

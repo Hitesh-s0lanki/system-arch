@@ -5,6 +5,9 @@ local limit = tonumber(ARGV[2])
 local window = tonumber(ARGV[3])
 local capacity = tonumber(ARGV[4])
 local signature = ARGV[5]
+redis.call('SET', KEYS[2], signature, 'NX')
+local registered = redis.call('GET', KEYS[2])
+if registered ~= signature then return redis.error_reply('policy configuration mismatch') end
 local config = redis.call('HGET', KEYS[1], '_config')
 if config and config ~= signature then
     return redis.error_reply('policy configuration mismatch')

@@ -113,6 +113,8 @@ func Wrap(checker Checker, config Config, next http.Handler) (http.Handler, erro
 		decision, err := checker.Check(r.Context(), config.Policy.ID, input)
 		if err != nil {
 			switch {
+			case errors.Is(err, service.ErrUnauthorizedTenant):
+				respond(w, http.StatusForbidden, "tenant_not_authorized")
 			case errors.Is(err, service.ErrUnknownPolicy), errors.Is(err, service.ErrInvalidRequest):
 				respond(w, http.StatusInternalServerError, "rate_limit_configuration_error")
 			default:

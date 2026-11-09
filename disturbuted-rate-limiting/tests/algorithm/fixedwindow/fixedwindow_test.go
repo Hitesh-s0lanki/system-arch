@@ -301,10 +301,10 @@ func TestCleanupExpired(t *testing.T) {
 	}
 
 	now = now.Add(time.Nanosecond)
-	// Keep one active key alongside the two keys from the expired window.
+	// A request at the new boundary retires expired counters proactively.
 	limiter.Allow("active")
-	if got := limiter.CleanupExpired(); got != 2 {
-		t.Fatalf("at expiration: removed %d keys, want 2", got)
+	if got := limiter.CleanupExpired(); got != 0 {
+		t.Fatalf("after proactive expiration: removed %d keys, want 0", got)
 	}
 	if got := limiter.CleanupExpired(); got != 0 {
 		t.Fatalf("repeated cleanup: removed %d keys, want 0", got)

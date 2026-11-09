@@ -10,7 +10,8 @@
     "lint:fix": "eslint src --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "test:e2e:load-tester": "playwright test tests/e2e/load-tester.spec.ts"
+    "test:e2e:load-tester": "playwright test tests/e2e/startup.spec.ts tests/e2e/load-tester.spec.ts tests/e2e/workload.spec.ts",
+    "test:e2e:rate-limiter": "playwright test tests/e2e/rate-limiter.spec.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",

@@ -138,7 +138,13 @@ func TestUpstreamFailureAndTimeout(t *testing.T) {
 
 func TestConfigValidation(t *testing.T) {
 	for _, mutate := range []func(*proxyapp.Config){
-		func(c *proxyapp.Config) { c.Version = 2 }, func(c *proxyapp.Config) { c.Upstream = "file:///tmp" },
+		func(c *proxyapp.Config) { c.Version = 2 },
+		func(c *proxyapp.Config) { c.MaxBodyBytes = -1 },
+		func(c *proxyapp.Config) { c.MaxConcurrent = -1 },
+		func(c *proxyapp.Config) { c.MaxBodyBytes = 64 << 20; c.MaxConcurrent = 128 },
+		func(c *proxyapp.Config) { c.Tenants = []string{""} },
+		func(c *proxyapp.Config) { c.Routes[0].Revision = " " },
+		func(c *proxyapp.Config) { c.Routes[0].Pattern = "/metrics" }, func(c *proxyapp.Config) { c.Upstream = "file:///tmp" },
 		func(c *proxyapp.Config) { c.Upstream = "http://user:secret@localhost" }, func(c *proxyapp.Config) { c.Storage.Mode = "unknown" },
 		func(c *proxyapp.Config) { c.CleanupInterval = "0s" }, func(c *proxyapp.Config) { c.UpstreamTimeout = "0s" },
 		func(c *proxyapp.Config) { c.Routes = nil }, func(c *proxyapp.Config) { c.Routes[0].Limit = 0 },

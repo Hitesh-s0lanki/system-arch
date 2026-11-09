@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"log/slog"
 	"net"
 	"net/http"
 	"net/netip"
@@ -23,6 +24,7 @@ import (
 )
 
 func main() {
+	slog.SetDefault(slog.New(slog.NewJSONHandler(os.Stderr, nil)))
 	if err := run(); err != nil {
 		log.Print(err)
 		os.Exit(1)

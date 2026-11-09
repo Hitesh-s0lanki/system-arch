@@ -6,7 +6,6 @@ package auth
 import (
 	"context"
 	"crypto/sha256"
-	"crypto/subtle"
 	"errors"
 	"fmt"
 	"strings"
@@ -29,16 +28,11 @@ type Credential struct {
 	Principal
 }
 
-type entry struct {
-	digest    [32]byte
-	principal Principal
-}
-
 // Bearer holds an immutable set of hashed tokens and verified identities.
-type Bearer struct{ entries []entry }
+type Bearer struct{ entries map[[32]byte]Principal }
 
 func NewBearer(credentials []Credential) (*Bearer, error) {
-	b := &Bearer{}
+	b := &Bearer{entries: make(map[[32]byte]Principal, len(credentials))}
 	seen := make(map[[32]byte]bool)
 	for _, credential := range credentials {
 		if len(credential.Token) < 32 || len(credential.Token) > 4096 || strings.IndexFunc(credential.Token, func(r rune) bool { return r <= 0x20 || r >= 0x7f }) >= 0 {
@@ -61,7 +55,7 @@ func NewBearer(credentials []Credential) (*Bearer, error) {
 			return nil, fmt.Errorf("auth: duplicate bearer token")
 		}
 		seen[digest] = true
-		b.entries = append(b.entries, entry{digest, p})
+		b.entries[digest] = p
 	}
 	return b, nil
 }
@@ -75,16 +69,8 @@ func (b *Bearer) Authenticate(ctx context.Context, token string) (Principal, err
 		return Principal{}, ErrUnauthenticated
 	}
 	digest := sha256.Sum256([]byte(token))
-	var principal Principal
-	found := 0
-	for _, entry := range b.entries {
-		match := subtle.ConstantTimeCompare(digest[:], entry.digest[:])
-		if match == 1 {
-			principal = entry.principal
-		}
-		found |= match
-	}
-	if found == 0 {
+	principal, found := b.entries[digest]
+	if !found {
 		return Principal{}, ErrUnauthenticated
 	}
 	return principal, nil

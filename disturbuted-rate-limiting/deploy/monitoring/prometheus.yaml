@@ -1,0 +1,12 @@
+# Mount the metrics bearer token into Prometheus at the path below.
+# Use HTTPS or a private, controlled network for this scrape endpoint.
+rule_files: [/etc/prometheus/alerts.yaml]
+scrape_configs:
+  - job_name: rate-limiter
+    scrape_interval: 15s
+    metrics_path: /metrics
+    authorization:
+      type: Bearer
+      credentials_file: /etc/prometheus/secrets/metrics-token
+    static_configs:
+      - targets: [gateway:8080]

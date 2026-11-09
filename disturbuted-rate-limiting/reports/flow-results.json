@@ -1,0 +1,519 @@
+{
+  "started_at": "2026-11-06T06:45:21.037670+00:00",
+  "public_upstream": "https://hiteshsolanki.com/",
+  "methodology": {
+    "controlled": "Interleaved sequential requests, warmed persistent connections, 2ms backend work; includes Docker networking.",
+    "public": "Six admitted sequential GETs per proxy (one cold plus five warm), six direct GETs, then local rejections. No public concurrency/load test.",
+    "limitations": "Public N=5 warm samples cannot establish p95/p99. WAN/CDN/TLS/Docker variability prevents isolating limiter cost from public timings."
+  },
+  "cases": [
+    {
+      "name": "ram: allowance and spoof resistance",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "ram: blocked requests never reach backend",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "ram: Retry-After",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "ram: authentication missing",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "ram: authentication invalid",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "ram: authentication forged",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "ram: authentication valid",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "ram: independent users",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "ram: credential quota",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "ram: capacity",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "ram: canonical route grouping",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "ram: concurrent quota",
+      "passed": true,
+      "detail": {
+        "allowed": 10,
+        "blocked": 30
+      }
+    },
+    {
+      "name": "ram: concurrent backend count",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "ram: method body query and response",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "ram: strip unverified identity and token",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "ram: upstream timeout",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "ram: upgrades unsupported",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "ram: reset first allowance",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "ram: reset exhausted",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "ram: next window",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "redis: allowance and spoof resistance",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "redis: blocked requests never reach backend",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "redis: Retry-After",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "redis: authentication missing",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "redis: authentication invalid",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "redis: authentication forged",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "redis: authentication valid",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "redis: independent users",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "redis: credential quota",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "redis: capacity",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "redis: canonical route grouping",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "redis: concurrent quota",
+      "passed": true,
+      "detail": {
+        "allowed": 10,
+        "blocked": 30
+      }
+    },
+    {
+      "name": "redis: concurrent backend count",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "redis: method body query and response",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "redis: strip unverified identity and token",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "redis: upstream timeout",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "redis: upgrades unsupported",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "redis: reset first allowance",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "redis: reset exhausted",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "redis: next window",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "direct: public HTTPS response",
+      "passed": true,
+      "detail": 200
+    },
+    {
+      "name": "ram: public HTTPS response",
+      "passed": true,
+      "detail": 200
+    },
+    {
+      "name": "redis: public HTTPS response",
+      "passed": true,
+      "detail": 200
+    },
+    {
+      "name": "direct: public warm GET 1",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "ram: public warm GET 1",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "redis: public warm GET 1",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "ram: public warm GET 2",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "redis: public warm GET 2",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "direct: public warm GET 2",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "redis: public warm GET 3",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "direct: public warm GET 3",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "ram: public warm GET 3",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "direct: public warm GET 4",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "ram: public warm GET 4",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "redis: public warm GET 4",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "ram: public warm GET 5",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "redis: public warm GET 5",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "direct: public warm GET 5",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "ram: public origin IP quota cannot be spoofed",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "redis: public origin IP quota cannot be spoofed",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "public response bodies match direct",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Redis outage returns 503",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Redis outage does not reach backend",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Redis readiness fails",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Redis liveness remains healthy",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Redis recovery forwards again",
+      "passed": true,
+      "detail": null
+    }
+  ],
+  "controlled_latency": {
+    "direct": {
+      "samples": 200,
+      "mean_ms": 3.14537669,
+      "p50_ms": 3.1308545,
+      "p95_ms": 3.606292,
+      "p99_ms": 3.776167,
+      "ttfb_p50_ms": 3.120396,
+      "min_ms": 2.460125,
+      "max_ms": 3.809542
+    },
+    "ram": {
+      "samples": 200,
+      "mean_ms": 5.275105585,
+      "p50_ms": 5.0587705,
+      "p95_ms": 6.677,
+      "p99_ms": 7.453333,
+      "ttfb_p50_ms": 5.038479000000001,
+      "min_ms": 3.902333,
+      "max_ms": 9.396792
+    },
+    "redis": {
+      "samples": 200,
+      "mean_ms": 5.725136885,
+      "p50_ms": 5.4430625,
+      "p95_ms": 7.649875,
+      "p99_ms": 8.43125,
+      "ttfb_p50_ms": 5.428104,
+      "min_ms": 3.888958,
+      "max_ms": 14.665125
+    },
+    "paired_added_ms": {
+      "ram": {
+        "samples": 200,
+        "mean_ms": 2.129728895,
+        "p50_ms": 1.9764585000000003,
+        "p95_ms": 3.399583,
+        "p99_ms": 4.355375,
+        "ttfb_p50_ms": 0.0,
+        "min_ms": 0.7583330000000004,
+        "max_ms": 6.779417
+      },
+      "redis": {
+        "samples": 200,
+        "mean_ms": 2.579760195,
+        "p50_ms": 2.352,
+        "p95_ms": 4.376583,
+        "p99_ms": 5.5377920000000005,
+        "ttfb_p50_ms": 0.0,
+        "min_ms": 0.6916669999999998,
+        "max_ms": 11.324124999999999
+      }
+    }
+  },
+  "public_latency": {
+    "direct": {
+      "cold": {
+        "status": 200,
+        "ttfb_ms": 44.229,
+        "total_ms": 72.59425,
+        "bytes": 265903,
+        "sha256": "408689a0f84d692c330ffe59e2b3ccfe2a436dd5137fbf667b59bb6b3fe4d0e6"
+      },
+      "warm": {
+        "samples": 5,
+        "mean_ms": 54.89105,
+        "p50_ms": 42.1885,
+        "ttfb_p50_ms": 10.815542,
+        "min_ms": 34.541292,
+        "max_ms": 94.170333
+      },
+      "response_bytes": [
+        265903,
+        265903,
+        265903,
+        265903,
+        265903
+      ],
+      "response_hashes": [
+        "408689a0f84d692c330ffe59e2b3ccfe2a436dd5137fbf667b59bb6b3fe4d0e6"
+      ]
+    },
+    "ram": {
+      "cold": {
+        "status": 200,
+        "ttfb_ms": 40.805375,
+        "total_ms": 66.847125,
+        "bytes": 265903,
+        "sha256": "408689a0f84d692c330ffe59e2b3ccfe2a436dd5137fbf667b59bb6b3fe4d0e6"
+      },
+      "warm": {
+        "samples": 5,
+        "mean_ms": 62.2845668,
+        "p50_ms": 51.611042,
+        "ttfb_p50_ms": 14.519917,
+        "min_ms": 43.603292,
+        "max_ms": 116.565917
+      },
+      "response_bytes": [
+        265903,
+        265903,
+        265903,
+        265903,
+        265903
+      ],
+      "response_hashes": [
+        "408689a0f84d692c330ffe59e2b3ccfe2a436dd5137fbf667b59bb6b3fe4d0e6"
+      ],
+      "blocked": {
+        "samples": 50,
+        "mean_ms": 1.2126316,
+        "p50_ms": 1.1197914999999998,
+        "p95_ms": 1.833167,
+        "p99_ms": 3.32775,
+        "ttfb_p50_ms": 1.1049795,
+        "min_ms": 0.707042,
+        "max_ms": 3.32775
+      }
+    },
+    "redis": {
+      "cold": {
+        "status": 200,
+        "ttfb_ms": 42.483375,
+        "total_ms": 73.422584,
+        "bytes": 265903,
+        "sha256": "408689a0f84d692c330ffe59e2b3ccfe2a436dd5137fbf667b59bb6b3fe4d0e6"
+      },
+      "warm": {
+        "samples": 5,
+        "mean_ms": 70.1633996,
+        "p50_ms": 70.092375,
+        "ttfb_p50_ms": 17.303792,
+        "min_ms": 54.378291,
+        "max_ms": 88.301041
+      },
+      "response_bytes": [
+        265903,
+        265903,
+        265903,
+        265903,
+        265903
+      ],
+      "response_hashes": [
+        "408689a0f84d692c330ffe59e2b3ccfe2a436dd5137fbf667b59bb6b3fe4d0e6"
+      ],
+      "blocked": {
+        "samples": 50,
+        "mean_ms": 0.9369375600000001,
+        "p50_ms": 0.8671040000000001,
+        "p95_ms": 1.409208,
+        "p99_ms": 1.467625,
+        "ttfb_p50_ms": 0.860271,
+        "min_ms": 0.729709,
+        "max_ms": 1.467625
+      }
+    }
+  },
+  "environment": {
+    "client": "Python http.client on host",
+    "proxy": "Go Docker image rate-limiter:local",
+    "backend": "Controlled host HTTP fixture + actual public HTTPS origin",
+    "redis": "Redis 7.4 in Docker",
+    "concurrency": "8 controlled workers, 40 requests"
+  },
+  "success": true,
+  "completed_at": "2026-11-06T06:45:33.767305+00:00",
+  "verification": {
+    "go_race_suite": "Passed with real Redis integration enabled in this session",
+    "default_config_changed": false,
+    "public_proxy_policy": "6 admitted requests per IP per 1h test window, then rejected locally; default remains 3 per 10s",
+    "go_vet": "Passed"
+  }
+}

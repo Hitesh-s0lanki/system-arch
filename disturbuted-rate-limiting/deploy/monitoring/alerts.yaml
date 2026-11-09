@@ -1,0 +1,29 @@
+groups:
+  - name: rate-limiter
+    rules:
+      - alert: RateLimiterBackendErrors
+        expr: sum(rate(ratelimit_decisions_total{outcome="backend_error"}[5m])) / clamp_min(sum(rate(ratelimit_decisions_total[5m])), 0.001) > 0.01
+        for: 2m
+        labels: {severity: critical}
+        annotations:
+          summary: More than 1% of limiter decisions fail
+          description: Inspect Redis availability, writable readiness, memory, ACLs, and policy revision conflicts.
+      - alert: RateLimiterCapacity
+        expr: ratelimit_capacity_utilization_ratio > 0.9
+        for: 5m
+        labels: {severity: warning}
+        annotations:
+          summary: Tenant identity capacity is above 90% for a policy
+          description: Inspect abuse and tenant budgets before raising max_keys with a coordinated policy revision.
+      - alert: RateLimiterDecisionLatency
+        expr: histogram_quantile(0.99, sum by (le) (rate(ratelimit_decision_duration_seconds_bucket[5m]))) > 0.05
+        for: 5m
+        labels: {severity: warning}
+        annotations:
+          summary: Limiter decision p99 exceeds 50ms
+      - alert: RateLimiterUnavailable
+        expr: up{job="rate-limiter"} == 0
+        for: 2m
+        labels: {severity: critical}
+        annotations:
+          summary: Rate limiter metrics cannot be scraped

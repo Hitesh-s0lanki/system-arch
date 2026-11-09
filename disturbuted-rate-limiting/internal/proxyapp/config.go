@@ -6,37 +6,47 @@ import (
 	"io"
 	"os"
 
+	"github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/auth"
 	"github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/policy"
 )
 
 type StorageConfig struct {
-	Mode      string `json:"mode"`
-	RedisURL  string `json:"redis_url"`
-	Namespace string `json:"namespace"`
-	Timeout   string `json:"timeout"`
+	Mode       string   `json:"mode"`
+	RedisURL   string   `json:"redis_url"`
+	Namespace  string   `json:"namespace"`
+	Timeout    string   `json:"timeout"`
+	Topology   string   `json:"topology"`
+	Addresses  []string `json:"addresses"`
+	MasterName string   `json:"master_name"`
+	PoolSize   int      `json:"pool_size"`
 }
 
 type Route struct {
-	Pattern string        `json:"pattern"`
-	Policy  policy.Policy `json:"policy"`
-	Limit   int           `json:"limit"`
-	Window  string        `json:"window"`
-	MaxKeys int           `json:"max_keys"`
+	Pattern  string        `json:"pattern"`
+	Revision string        `json:"revision"`
+	Policy   policy.Policy `json:"policy"`
+	Limit    int           `json:"limit"`
+	Window   string        `json:"window"`
+	MaxKeys  int           `json:"max_keys"`
 }
 
 // Config is a versioned proxy configuration. Secrets may be supplied through
 // REDIS_URL and RATE_LIMIT_CREDENTIALS instead of storing them in this file.
 type Config struct {
-	Version              int           `json:"version"`
-	Listen               string        `json:"listen"`
-	Upstream             string        `json:"upstream"`
-	Storage              StorageConfig `json:"storage"`
-	CleanupInterval      string        `json:"cleanup_interval"`
-	UpstreamTimeout      string        `json:"upstream_timeout"`
-	TrustedProxies       []string      `json:"trusted_proxies"`
-	AnonymousTenant      string        `json:"anonymous_tenant"`
-	ForwardAuthorization bool          `json:"forward_authorization"`
-	Routes               []Route       `json:"routes"`
+	MaxBodyBytes         int64            `json:"max_body_bytes"`
+	MaxConcurrent        int              `json:"max_concurrent"`
+	Tenants              []string         `json:"tenants"`
+	OIDC                 *auth.OIDCConfig `json:"oidc"`
+	Version              int              `json:"version"`
+	Listen               string           `json:"listen"`
+	Upstream             string           `json:"upstream"`
+	Storage              StorageConfig    `json:"storage"`
+	CleanupInterval      string           `json:"cleanup_interval"`
+	UpstreamTimeout      string           `json:"upstream_timeout"`
+	TrustedProxies       []string         `json:"trusted_proxies"`
+	AnonymousTenant      string           `json:"anonymous_tenant"`
+	ForwardAuthorization bool             `json:"forward_authorization"`
+	Routes               []Route          `json:"routes"`
 }
 
 func Load(path string) (Config, error) {

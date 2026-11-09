@@ -64,7 +64,7 @@ Scope: a standalone Go API that runs k6 containers on demand using local Docker 
 
 - [x] Add the workbench under the frontend's separate Load Tester navigation.
 - [x] Proxy supported API calls through Next.js with a server-side service URL.
-- [x] Add compact capacity and fixed-RPS forms with expandable request settings.
+- [x] Add a simple address + maximum-load form; generate increasing loads automatically and keep technical settings optional.
 - [x] Poll jobs, cancel execution, restore selected runs, and show recent history.
 - [x] Display provisional aggregate guidance, headroom, step evidence, and insufficient-data reasons.
 - [x] Expose execution logs and downloadable JSON reports.
@@ -72,6 +72,9 @@ Scope: a standalone Go API that runs k6 containers on demand using local Docker 
 - [x] Test input validation, proxy restrictions, offline state, and insufficient evidence.
 - [x] Verify desktop/mobile layouts, RTL, and 200% zoom.
 - [x] Pass frontend type checking, targeted lint, and production build.
+- [x] Replace offline terminal instructions with a local Docker/service startup button and live progress.
+- [x] Check Docker access, open Docker Desktop when stopped, and reconnect automatically.
+- [x] Handle missing Docker, startup failures, retries, duplicate clicks, and local request restrictions.
 
 ## Follow-up features (outside the initial MVP)
 

@@ -1,0 +1,27 @@
+?   	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting	[no test files]
+?   	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/algorithm/fixedwindow	[no test files]
+?   	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/algorithm/fixedwindow/redis	[no test files]
+?   	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/auth	[no test files]
+?   	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/cmd/ratelimitd	[no test files]
+?   	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/examples/backend	[no test files]
+?   	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/examples/identitybased	[no test files]
+?   	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/identity	[no test files]
+?   	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/internal/app	[no test files]
+?   	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/internal/httpserver	[no test files]
+?   	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/internal/proxyapp	[no test files]
+?   	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/internal/telemetry	[no test files]
+?   	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/maintenance	[no test files]
+?   	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/middleware/http	[no test files]
+?   	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/policy	[no test files]
+?   	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/service	[no test files]
+ok  	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/tests/algorithm/fixedwindow	1.101s
+ok  	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/tests/algorithm/fixedwindow/redis	1.390s
+ok  	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/tests/auth	1.440s
+ok  	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/tests/identity	1.088s
+ok  	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/tests/internal/app	1.139s
+ok  	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/tests/internal/proxyapp	10.510s
+ok  	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/tests/maintenance	1.105s
+ok  	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/tests/middleware/http	1.137s
+ok  	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/tests/policy	1.065s
+ok  	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/tests/service	1.061s
+?   	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/tests/testredis	[no test files]

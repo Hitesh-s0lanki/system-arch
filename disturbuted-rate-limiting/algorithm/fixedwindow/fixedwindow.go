@@ -47,14 +47,14 @@ type windowState struct {
 // Limiter tracks requests within fixed time windows.
 // A Limiter must not be copied after first use.
 type Limiter struct {
-	mu                sync.Mutex
-	config            Config
-	now               func() time.Time
-	windows           map[string]windowState
-	lastNow           time.Time
-	clockSet          bool
-	capacityFull      bool
-	capacityFullUntil time.Time
+	mu           sync.Mutex
+	config       Config
+	now          func() time.Time
+	windows      map[string]windowState
+	lastNow      time.Time
+	clockSet     bool
+	activeWindow time.Time
+	windowSet    bool
 }
 
 // Option configures a limiter during construction.
@@ -103,28 +103,31 @@ func New(config Config, options ...Option) (*Limiter, error) {
 
 // Allow evaluates one request for the given key.
 func (l *Limiter) Allow(key string) Decision {
+	d, _ := l.allow(context.Background(), key)
+	return d
+}
+
+func (l *Limiter) allow(ctx context.Context, key string) (Decision, error) {
 	if len(key) > MaxKeyBytes || strings.TrimSpace(key) == "" {
-		return Decision{Reason: ReasonInvalidKey}
+		return Decision{Reason: ReasonInvalidKey}, nil
 	}
 	l.mu.Lock()
 	defer l.mu.Unlock()
-
+	if err := ctx.Err(); err != nil {
+		return Decision{}, err
+	}
 	now := l.nowLocked()
 	windowStart := now.Truncate(l.config.Window)
+	// All counters share a boundary. Retire the entire map instead of scanning
+	// every identity while holding the request mutex.
+	if !l.windowSet || !l.activeWindow.Equal(windowStart) {
+		l.windows = make(map[string]windowState)
+		l.activeWindow = windowStart
+		l.windowSet = true
+	}
 	state, exists := l.windows[key]
 	if !exists && len(l.windows) >= l.config.MaxKeys {
-		// A full scan already established that all entries expire no earlier
-		// than this boundary. Avoid scanning again for every unknown key.
-		if l.capacityFull && now.Before(l.capacityFullUntil) {
-			return Decision{Reason: ReasonCapacityExceeded}
-		}
-		l.cleanupExpiredLocked(now)
-		if len(l.windows) >= l.config.MaxKeys {
-			l.capacityFull = true
-			l.capacityFullUntil = windowStart.Add(l.config.Window)
-			// No active key is evicted and no state is stored for this key.
-			return Decision{Reason: ReasonCapacityExceeded}
-		}
+		return Decision{Reason: ReasonCapacityExceeded}, nil
 	}
 
 	if !exists {
@@ -142,7 +145,7 @@ func (l *Limiter) Allow(key string) Decision {
 			Remaining:  0,
 			RetryAfter: windowStart.Add(l.config.Window).Sub(now),
 			Reason:     ReasonRateLimited,
-		}
+		}, nil
 	}
 
 	state.count++
@@ -151,22 +154,22 @@ func (l *Limiter) Allow(key string) Decision {
 	return Decision{
 		Allowed:   true,
 		Remaining: l.config.Limit - state.count,
-	}
+	}, nil
 }
 
 // Evaluate adapts the in-memory limiter to context-aware services. Cancellation
-// is checked before Allow; acquiring Allow's mutex is not interruptible.
+// is checked before and after locking; acquiring the mutex is not interruptible.
 func (l *Limiter) Evaluate(ctx context.Context, key string) (Decision, error) {
 	if err := ctx.Err(); err != nil {
 		return Decision{}, err
 	}
-	return l.Allow(key), nil
+	return l.allow(ctx, key)
 }
 
 // CleanupExpired removes keys whose windows have ended and returns the number
 // removed. It is safe to call concurrently with Allow. The caller must invoke
 // it periodically; the limiter does not start a background cleanup goroutine.
-// Cleanup scans all tracked keys while holding the limiter's mutex.
+// Cleanup retires the expired map in constant time under the mutex.
 func (l *Limiter) CleanupExpired() int {
 	l.mu.Lock()
 	defer l.mu.Unlock()
@@ -174,16 +177,14 @@ func (l *Limiter) CleanupExpired() int {
 	return l.cleanupExpiredLocked(l.nowLocked())
 }
 
-// cleanupExpiredLocked scans tracked keys. The caller must hold mu.
+// cleanupExpiredLocked retires expired state. The caller must hold mu.
 func (l *Limiter) cleanupExpiredLocked(now time.Time) int {
-	removed := 0
-	for key, state := range l.windows {
-		if !now.Before(state.start.Add(l.config.Window)) {
-			delete(l.windows, key)
-			removed++
-		}
+	if l.windowSet && !now.Before(l.activeWindow.Add(l.config.Window)) {
+		removed := len(l.windows)
+		l.windows = make(map[string]windowState)
+		return removed
 	}
-	return removed
+	return 0
 }
 
 // nowLocked returns nondecreasing wall-clock time. The caller must hold mu.
@@ -197,4 +198,14 @@ func (l *Limiter) nowLocked() time.Time {
 	l.lastNow = now
 	l.clockSet = true
 	return now
+}
+
+// Usage reports the fraction of this tenant's identity budget currently used.
+func (l *Limiter) Usage() float64 {
+	l.mu.Lock()
+	defer l.mu.Unlock()
+	if l.windowSet && !l.nowLocked().Before(l.activeWindow.Add(l.config.Window)) {
+		return 0
+	}
+	return float64(len(l.windows)) / float64(l.config.MaxKeys)
 }

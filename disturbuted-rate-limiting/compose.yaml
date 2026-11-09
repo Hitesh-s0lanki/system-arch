@@ -9,6 +9,9 @@ x-image: &image
   cap_drop: [ALL]
   security_opt: [no-new-privileges:true]
   stop_grace_period: 10s
+  mem_limit: 512m
+  cpus: 1
+  pids_limit: 128
 
 services:
   gateway:
@@ -20,6 +23,7 @@ services:
       RATE_LIMIT_UPSTREAM: ${RATE_LIMIT_UPSTREAM:-http://backend:8080}
       RATE_LIMIT_NAMESPACE: ${RATE_LIMIT_NAMESPACE:-demo}
       RATE_LIMIT_CREDENTIALS: ${RATE_LIMIT_CREDENTIALS:-[]}
+      RATE_LIMIT_METRICS_TOKEN: ${RATE_LIMIT_METRICS_TOKEN:-}
     volumes:
       - ./configs/proxy.json:/etc/ratelimit/proxy.json:ro
     depends_on:
