@@ -16,7 +16,7 @@ jobs:
       redis:
         image: redis:7.4.7-alpine
         ports: ['16379:6379']
-        options: --health-cmd 'redis-cli ping' --health-interval 2s --health-timeout 2s --health-retries 15
+        options: --health-cmd "redis-cli ping" --health-interval 2s --health-timeout 2s --health-retries 15
     env:
       REDIS_TEST_URL: redis://127.0.0.1:16379/0
       REDIS_SERVER_BIN: /usr/bin/redis-server
