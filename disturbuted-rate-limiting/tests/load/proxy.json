@@ -1,0 +1,7 @@
+{
+  "version":1,"listen":":8080","upstream":"http://backend:8080",
+  "storage":{"mode":"redis","namespace":"load-test","timeout":"500ms","pool_size":32},
+  "cleanup_interval":"1s","upstream_timeout":"5s","max_body_bytes":1048576,"max_concurrent":128,
+  "anonymous_tenant":"public","trusted_proxies":[],"forward_authorization":false,
+  "routes":[{"pattern":"/","policy":{"id":"load","identity":"ip","per_route":false},"revision":"load-v1","limit":100000000,"window":"1h","max_keys":10000}]
+}

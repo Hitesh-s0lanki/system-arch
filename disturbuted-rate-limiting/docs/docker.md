@@ -76,7 +76,8 @@ Keep your backend private so clients cannot bypass the gateway.
 ## Configuration
 
 The image starts `ratelimitd -config /etc/ratelimit/proxy.json`. JSON is versioned
-and unknown fields fail startup. Config is loaded once; restart to apply changes.
+and unknown fields fail startup. Config is loaded once; restart to apply changes. Policy revisions and tenant budgets
+are described in [production operation](production.md).
 
 | Field | Purpose |
 | --- | --- |
@@ -123,7 +124,8 @@ tokens using `RATE_LIMIT_CREDENTIALS`, with the same format as
 `configs/credentials.example.json`. No default credentials are enabled. For
 Compose, export that environment variable before `up`. Do not infer users from
 unverified request headers. The static adapter is a minimal integration; an
-external identity provider and dynamic credential management remain future work.
+OIDC integration and provisioned tenant budgets are described in
+[production operation](production.md). Static credential changes require restart.
 
 Forwarded identity headers are sanitized. Only verified identities populate
 `X-RateLimit-Tenant-ID`, `X-RateLimit-User-ID`, and `X-RateLimit-API-Key-ID`.
@@ -138,8 +140,8 @@ code should trust these headers only from the private gateway. Enable
 | --- | --- |
 | Separate counters per process | Shared counters for replicas using identical policies and namespace |
 | Process clock with rollback protection | Redis server clock, Unix-epoch-aligned millisecond windows |
-| At most `max_keys` entries per policy | At most `max_keys` counter fields in one hash per policy |
-| Periodic expiration scans | Whole policy hash expires at the window boundary |
+| At most `max_keys` entries per tenant/policy in proxy mode | At most `max_keys` counter fields per tenant/policy/revision |
+| Constant-time expired map retirement | Whole policy hash expires at the window boundary |
 | Restart clears quotas | Restarting the gateway preserves unexpired Redis state |
 
 For unusual durations, RAM's Go `Time.Truncate` alignment and Redis's Unix-epoch
@@ -147,7 +149,7 @@ alignment may differ. Conventional windows such as 1s, 10s, or 1m align in both.
 Redis windows must be at least 1ms and whole milliseconds; Redis limits/capacity
 must fit positive signed 32-bit values. Metadata fields do not consume key capacity.
 Counters, capacity checks, and expiry run atomically in Lua on a Redis primary.
-There is no per-request scan in Redis, but a busy policy is a single hash/hot key.
+There is no per-request scan in Redis, but a busy tenant/policy is a single hash/hot key.
 
 Redis decisions fail closed: outage, timeout, read-only state, or command errors
 return 503 without forwarding to the backend. There is no automatic RAM fallback
@@ -155,8 +157,9 @@ and automatic Redis command retries are disabled to avoid double consumption.
 A timed-out operation may still have consumed quota; no automatic refund occurs.
 The sample uses `noeviction`; Redis out-of-memory errors also fail closed.
 
-Use identical policy settings across replicas. A conflicting rate/window/capacity
-on an existing Redis policy returns an error until that state expires. Changing
+Use identical policy settings across replicas. Persistent revision guards reject conflicting rate/window/capacity or identity
+semantics at startup and during readiness. Use a new revision with a coordinated
+cutover to intentionally reset quotas. Changing
 identity semantics or namespace is a deliberate quota migration, not a live update.
 Each request checks one policy; multiple-policy atomic enforcement is not included.
 Both modes retain fixed-window boundary bursts and charge admitted attempts even
@@ -167,7 +170,8 @@ it does not provide a durable rollback guarantee after expiration/restart.
 
 - `/healthz`: gateway liveness; not forwarded or rate limited.
 - `/readyz`: gateway readiness, including Redis connectivity in Redis mode.
-  It does not test upstream health or prove Redis is writable.
+  It validates policy guards and expiring Redis probe writes without charging quota.
+  It does not test upstream health or guarantee future command success.
 - 429: allowance exhausted; 503: rate-limit capacity/backend unavailable.
 - 502: upstream unreachable; 504: upstream timeout.
 - Request method, path, query, body, upstream status, and ordinary response headers
@@ -177,9 +181,9 @@ it does not provide a durable rollback guarantee after expiration/restart.
   part of this first release. Incomplete streamed responses cannot change their
   status to 504 after headers have already been sent.
 - HTTP header/body read timeouts are bounded; shutdown waits up to five seconds.
-- Redis standalone primary only; Sentinel/Cluster/failover durability, metrics,
-  and production deployment hardening are later steps. AOF is not an exactly-once
-  or zero-loss replication guarantee.
+- Redis standalone, Sentinel, and Cluster clients are supported. Protected metrics,
+  deployment manifests, and alerts are in [production operation](production.md).
+  AOF/replication do not provide exactly-once or zero-loss failover guarantees.
 
 ## Verification
 

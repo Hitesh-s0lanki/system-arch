@@ -10,21 +10,36 @@ import {
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
+  SidebarMenuAction,
   SidebarMenuItem,
   SidebarSeparator,
+  SidebarMenuSub,
+  SidebarMenuSubItem,
+  SidebarMenuSubButton,
+  useSidebar,
 } from '@/components/ui/sidebar'
-import { Gauge, HelpCircle, Zap } from 'lucide-react'
+import { ChevronDown, Gauge, HelpCircle, Zap } from 'lucide-react'
 import { Logo } from '@/components/Logo'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useState } from 'react'
 
 const systemDesignNav = [
-  { label: 'Rate Limiter', icon: Zap, href: '/system-design/rate-limiter' },
   { label: 'Load Tester', icon: Gauge, href: '/system-design/load-tester' },
 ]
 
 export function AppSidebar() {
   const pathname = usePathname()
+  const [rateLimiterOpen, setRateLimiterOpen] = useState(true)
+  const { state, setOpen, setOpenMobile } = useSidebar()
+  const rateLimiterLinks = [
+    { label: 'Overview', href: '/system-design/rate-limiter' },
+    { label: 'Installation guide', href: '/system-design/rate-limiter/docs' },
+    {
+      label: 'Fixed Window Counter',
+      href: '/system-design/rate-limiter/fixed-window',
+    },
+  ]
   return (
     <Sidebar collapsible="icon">
       {/* ── Brand ── */}
@@ -42,6 +57,56 @@ export function AppSidebar() {
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu className="gap-px">
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  tooltip="Rate Limiter"
+                  render={<Link href="/system-design/rate-limiter" />}
+                  onClick={() => {
+                    setRateLimiterOpen(true)
+                    setOpenMobile(false)
+                  }}
+                  className="h-[30px] gap-2 rounded-md px-2 text-[13px] font-normal text-muted-foreground"
+                >
+                  <Zap className="size-[14px] shrink-0" strokeWidth={1.6} />
+                  <span>Rate Limiter</span>
+                </SidebarMenuButton>
+                <SidebarMenuAction
+                  aria-label={
+                    rateLimiterOpen
+                      ? 'Collapse Rate Limiter navigation'
+                      : 'Expand Rate Limiter navigation'
+                  }
+                  aria-expanded={rateLimiterOpen}
+                  aria-controls="rate-limiter-navigation"
+                  onClick={() => {
+                    if (state === 'collapsed') setOpen(true)
+                    setRateLimiterOpen((value) => !value)
+                  }}
+                >
+                  <ChevronDown
+                    className={`size-3.5 transition-transform ${rateLimiterOpen ? '' : '-rotate-90'}`}
+                  />
+                </SidebarMenuAction>
+                <div id="rate-limiter-navigation" hidden={!rateLimiterOpen}>
+                  <SidebarMenuSub>
+                    {rateLimiterLinks.map((item) => (
+                      <SidebarMenuSubItem key={item.href}>
+                        <SidebarMenuSubButton
+                          render={<Link href={item.href} />}
+                          isActive={pathname === item.href}
+                          aria-current={
+                            pathname === item.href ? 'page' : undefined
+                          }
+                          onClick={() => setOpenMobile(false)}
+                          className="text-[13px]"
+                        >
+                          {item.label}
+                        </SidebarMenuSubButton>
+                      </SidebarMenuSubItem>
+                    ))}
+                  </SidebarMenuSub>
+                </div>
+              </SidebarMenuItem>
               {systemDesignNav.map((item) => (
                 <SidebarMenuItem key={item.label}>
                   <SidebarMenuButton

@@ -90,7 +90,7 @@ func TestConcurrentExpirationAndCleanup(t *testing.T) {
 	for count := range removed {
 		cleaned += count
 	}
-	if allowed != 8 || cleaned != 16 {
-		t.Fatalf("allowed=%d cleaned=%d, want 8 and 16", allowed, cleaned)
+	if allowed != 8 || (cleaned != 0 && cleaned != 16) || l.Usage() != 1.0/64 {
+		t.Fatalf("allowed=%d cleaned=%d usage=%v: expired state must be retired once and the current counter preserved", allowed, cleaned, l.Usage())
 	}
 }

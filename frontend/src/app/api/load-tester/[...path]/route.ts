@@ -69,7 +69,7 @@ async function proxy(request: NextRequest, context: Context) {
     return Response.json(
       {
         error:
-          'Load tester unavailable. Start it with docker compose up -d in load-tester, then retry.',
+          'Load tester unavailable. Use Start load tester above to reconnect.',
       },
       { status: 503, headers: { 'Cache-Control': 'no-store' } },
     )

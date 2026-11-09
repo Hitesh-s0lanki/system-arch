@@ -23,6 +23,7 @@ import {
   PanelLeft,
   HelpCircle,
   Activity,
+  BookOpen,
 } from 'lucide-react'
 import { usePathname, useRouter } from 'next/navigation'
 
@@ -37,11 +38,15 @@ export function AppBar({ title = 'Overview', breadcrumb = [] }: AppBarProps) {
   const router = useRouter()
   const { toggleSidebar } = useSidebar()
 
-  const pageTitle = pathname.startsWith('/system-design/rate-limiter')
-    ? 'Rate Limiter'
-    : pathname.startsWith('/system-design/load-tester')
-      ? 'Load Tester'
-      : title
+  const pageTitle = pathname.startsWith('/system-design/rate-limiter/docs')
+    ? 'Rate Limiter / Installation guide'
+    : pathname.startsWith('/system-design/rate-limiter/fixed-window')
+      ? 'Rate Limiter / Fixed Window Counter'
+      : pathname.startsWith('/system-design/rate-limiter')
+        ? 'Rate Limiter'
+        : pathname.startsWith('/system-design/load-tester')
+          ? 'Load Tester'
+          : title
 
   React.useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -119,6 +124,16 @@ export function AppBar({ title = 'Overview', breadcrumb = [] }: AppBarProps) {
             </CommandItem>
             <CommandItem
               onSelect={() =>
+                runCommand(() =>
+                  router.push('/system-design/rate-limiter/docs'),
+                )
+              }
+            >
+              <BookOpen className="mr-2 h-4 w-4 text-muted-foreground" />
+              <span>Rate Limiter Installation guide</span>
+            </CommandItem>
+            <CommandItem
+              onSelect={() =>
                 runCommand(() => router.push('/system-design/load-tester'))
               }
             >
@@ -132,7 +147,9 @@ export function AppBar({ title = 'Overview', breadcrumb = [] }: AppBarProps) {
           <CommandGroup heading="Rate Limiting Algorithms">
             <CommandItem
               onSelect={() =>
-                runCommand(() => router.push('/system-design/rate-limiter'))
+                runCommand(() =>
+                  router.push('/system-design/rate-limiter/fixed-window'),
+                )
               }
             >
               <SlidersHorizontal className="mr-2 h-4 w-4 text-muted-foreground" />
@@ -140,7 +157,9 @@ export function AppBar({ title = 'Overview', breadcrumb = [] }: AppBarProps) {
             </CommandItem>
             <CommandItem
               onSelect={() =>
-                runCommand(() => router.push('/system-design/rate-limiter'))
+                runCommand(() =>
+                  router.push('/system-design/rate-limiter/fixed-window'),
+                )
               }
             >
               <Activity className="mr-2 h-4 w-4 text-muted-foreground" />
@@ -148,7 +167,9 @@ export function AppBar({ title = 'Overview', breadcrumb = [] }: AppBarProps) {
             </CommandItem>
             <CommandItem
               onSelect={() =>
-                runCommand(() => router.push('/system-design/rate-limiter'))
+                runCommand(() =>
+                  router.push('/system-design/rate-limiter/fixed-window'),
+                )
               }
             >
               <Layers className="mr-2 h-4 w-4 text-muted-foreground" />
@@ -156,7 +177,9 @@ export function AppBar({ title = 'Overview', breadcrumb = [] }: AppBarProps) {
             </CommandItem>
             <CommandItem
               onSelect={() =>
-                runCommand(() => router.push('/system-design/rate-limiter'))
+                runCommand(() =>
+                  router.push('/system-design/rate-limiter/fixed-window'),
+                )
               }
             >
               <Layers className="mr-2 h-4 w-4 text-muted-foreground" />

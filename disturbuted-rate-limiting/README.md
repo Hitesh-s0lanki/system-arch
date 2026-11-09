@@ -1,8 +1,13 @@
 # Distributed rate limiter
 
-A Go learning project building rate-limiting algorithms and services incrementally.
+A Go fixed-window rate limiter with embedded-library and reverse-proxy integrations.
 The current algorithm is fixed window, with RAM or Redis storage. It can run as
 an embedded Go library, a demonstration server, or a configurable reverse proxy.
+
+For embedding in an application, use the [Go SDK](docs/sdk.md):
+`sdk.NewMemory` or `sdk.NewRedis` constructs the policy registry and independent
+fixed-window limiters. Reuse the client for `Check` calls or pass it directly to
+the HTTP middleware. Run `go run ./examples/sdk` for a complete local example.
 
 ## Docker quick start
 
@@ -40,6 +45,7 @@ Trusted application code resolves identity and chooses a policy
 | Package | Responsibility |
 | --- | --- |
 | Root `ratelimit` | Algorithm-independent decision and rejection reasons |
+| `sdk` | Embedded RAM/Redis constructors, policy checks, readiness, and cleanup |
 | `algorithm/fixedwindow` | Counters, windows, capacity, cleanup, concurrency |
 | `algorithm/fixedwindow/redis` | Atomic Redis decisions, capacity, and expiry |
 | `identity` | Bounded identity inputs, canonical IP addresses, namespaced keys |
@@ -196,24 +202,27 @@ joins both workers. This demonstration mode keeps counters in RAM and does not
 serve TLS itself. Proxy mode can persist unexpired counters in Redis as described
 in the Docker guide.
 
-## Completed scope and next steps
+## Operational safeguards and verification
 
-The basic in-memory fixed-window milestone, HTTP integration, and minimal Docker
-reverse proxy with RAM/Redis selection are implemented.
-Tests cover direct key validation, boundaries, skipped windows, rollback, capacity,
-concurrent expiration, authentication, proxy spoofing, HTTP responses, and shutdown.
-Run performance benchmarks separately from race tests:
+The proxy includes bounded bodies/concurrency, per-tenant capacity isolation,
+revision-guarded Redis policies, Sentinel/Cluster clients, writable readiness,
+OIDC verification, authenticated Prometheus metrics, and structured request logs.
+RAM rollover and cleanup retire expired maps without scanning every identity.
+
+See [production operation](docs/production.md) for configuration, rollout contracts,
+HA limits, identity integration, monitoring, Kubernetes manifests, and load tests.
+Changes from the earlier prototype reset proxy Redis key scopes; use a coordinated
+cutover. Revision changes deliberately create fresh allowance, so mixed revisions
+must not serve a strict shared quota simultaneously.
 
 ```sh
-go test -run '^$' -bench . -benchmem ./tests/algorithm/fixedwindow
+make verify
+REDIS_TEST_URL=redis://127.0.0.1:6379/0 REDIS_SERVER_BIN=/path/to/redis-server make integration
+make benchmark
 ```
 
-Fixed-window `Evaluate` checks cancellation before counting; waiting for its mutex
-is not interruptible. Cleanup scans hold that mutex. RAM processes have separate
-counters and restarts discard state. Redis uses shared expiring counters. This
-is a functional foundation, not the finished distributed production system.
-
-Next: implement the remaining algorithms one by one. Redis failover/Cluster,
-external identity-provider integrations, metrics, realistic p95/p99 load testing,
-CI, and production deployment follow in later milestones. A remote decision API
-and non-Go client SDKs are not implemented yet.
+One fixed-window policy is evaluated per route. Boundary bursts and charging
+admitted attempts remain explicit contracts. Multi-policy atomic transactions,
+remote decision APIs, other algorithms, and non-Go SDKs are outside this release.
+Real capacity and failover durability must be accepted against your deployment's
+requirements; Redis HA does not guarantee zero counter loss.

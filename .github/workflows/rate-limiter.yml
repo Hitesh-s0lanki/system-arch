@@ -1,0 +1,50 @@
+name: Rate limiter
+on:
+  push:
+    paths: ['disturbuted-rate-limiting/**', '.github/workflows/rate-limiter.yml']
+  pull_request:
+    paths: ['disturbuted-rate-limiting/**', '.github/workflows/rate-limiter.yml']
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: disturbuted-rate-limiting
+    services:
+      redis:
+        image: redis:7.4.7-alpine
+        ports: ['16379:6379']
+        options: --health-cmd "redis-cli ping" --health-interval 2s --health-timeout 2s --health-retries 15
+    env:
+      REDIS_TEST_URL: redis://127.0.0.1:16379/0
+      REDIS_SERVER_BIN: /usr/bin/redis-server
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: disturbuted-rate-limiting/go.mod
+          cache-dependency-path: disturbuted-rate-limiting/go.sum
+      - run: sudo apt-get update && sudo apt-get install -y redis-server
+      - run: test -z "$(gofmt -l $(find . -name '*.go'))"
+      - run: go mod verify
+      - run: make integration
+      - run: go vet ./...
+      - run: go run golang.org/x/vuln/cmd/govulncheck@v1.9.0 ./...
+      - run: CGO_ENABLED=0 go build ./cmd/ratelimitd
+      - run: docker compose config --quiet && docker compose -f compose.yaml -f compose.redis.yaml -f tests/load/compose.yaml config --quiet
+      - run: docker build -t rate-limiter:ci .
+  load:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: disturbuted-rate-limiting
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker compose -f compose.yaml -f compose.redis.yaml -f tests/load/compose.yaml up -d --build --wait
+      - run: docker run --rm --network host -v "$PWD/tests/load:/work:ro" -e TARGETS=http://127.0.0.1:8088,http://127.0.0.1:8089 -e DURATION=30s -e P95_MS=100 -e P99_MS=200 grafana/k6:1.0.0 run /work/sustained.js
+      - if: always()
+        run: docker compose -f compose.yaml -f compose.redis.yaml -f tests/load/compose.yaml logs --no-color
+      - if: always()
+        run: docker compose -f compose.yaml -f compose.redis.yaml -f tests/load/compose.yaml down -v

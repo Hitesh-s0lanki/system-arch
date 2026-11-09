@@ -1,0 +1,23 @@
+# Merge after compose.yaml and compose.redis.yaml, from the module directory.
+services:
+  gateway:
+    volumes:
+      - ./tests/load/proxy.json:/etc/ratelimit/proxy.json:ro
+    environment:
+      RATE_LIMIT_NAMESPACE: load-test
+      RATE_LIMIT_METRICS_TOKEN: local-load-metrics-only
+  replica:
+    extends:
+      file: compose.yaml
+      service: gateway
+    ports: !override ["127.0.0.1:8089:8080"]
+    environment:
+      RATE_LIMIT_STORAGE: redis
+      REDIS_URL: redis://redis:6379/0
+      RATE_LIMIT_NAMESPACE: load-test
+      RATE_LIMIT_METRICS_TOKEN: local-load-metrics-only
+    volumes:
+      - ./tests/load/proxy.json:/etc/ratelimit/proxy.json:ro
+    depends_on:
+      redis: {condition: service_healthy}
+      backend: {condition: service_healthy}

@@ -44,18 +44,30 @@ test('sidebar → real Docker test → suggestion → restore → cancel → com
     page.getByText('Load tester connected', { exact: true }),
   ).toBeVisible()
 
-  await page.getByLabel('Target endpoint', { exact: true }).fill(target)
-  await page.getByLabel('RPS steps', { exact: true }).fill('10, 5')
-  await page.getByRole('button', { name: 'Run test', exact: true }).click()
+  await page
+    .getByLabel('Website or server address', { exact: true })
+    .fill(target)
+  await expect(page.getByLabel('RPS steps', { exact: true })).toHaveCount(0)
+  await page
+    .getByLabel('Website or server address', { exact: true })
+    .fill('ftp://example.com')
+  await page
+    .getByRole('button', { name: 'Test my server', exact: true })
+    .click()
   await expect(
-    page.getByRole('alert').filter({ hasText: 'increasing rates' }),
+    page.getByRole('alert').filter({ hasText: 'HTTP or HTTPS' }),
   ).toBeVisible()
-  await page.getByLabel('RPS steps', { exact: true }).fill('5, 10')
-  await page.getByText('Thresholds & request settings', { exact: true }).click()
+  await page
+    .getByLabel('Website or server address', { exact: true })
+    .fill(target)
+  await page.getByLabel('Maximum load', { exact: true }).fill('10')
+  await page.getByText('Advanced settings', { exact: true }).click()
   await page.getByLabel('Timeout (s)', { exact: true }).fill('1')
-  await page.getByLabel('Successful P95 (ms)', { exact: true }).fill('500')
-  await page.getByText('Thresholds & request settings', { exact: true }).click()
-  await page.getByRole('button', { name: 'Run test', exact: true }).click()
+  await page.getByLabel('Response time limit (ms)', { exact: true }).fill('500')
+  await page.getByText('Advanced settings', { exact: true }).click()
+  await page
+    .getByRole('button', { name: 'Test my server', exact: true })
+    .click()
   await expect(page).toHaveURL(/test=[a-f0-9]{32}/)
   const capacityID = new URL(page.url()).searchParams.get('test')!
   await expect(
@@ -70,12 +82,14 @@ test('sidebar → real Docker test → suggestion → restore → cancel → com
     exact: true,
   })
   await expect(
-    results.getByText('Suggested aggregate limit', { exact: true }),
-  ).toBeVisible({ timeout: 120_000 })
+    results.getByText('Suggested limit', { exact: true }),
+  ).toBeVisible({ timeout: 160_000 })
   await expect(results.locator('strong').first()).toHaveText('4')
   await expect(results.getByRole('table')).toContainText('passed')
   await expect(results.getByRole('table')).toContainText('failed')
-  await page.getByText('Run details & API report', { exact: true }).click()
+  await page
+    .getByText('Technical details & full report', { exact: true })
+    .click()
   await page
     .getByRole('button', { name: 'Execution logs', exact: true })
     .click()
@@ -102,12 +116,15 @@ test('sidebar → real Docker test → suggestion → restore → cancel → com
     fullPage: true,
   })
 
+  await page.getByText('Advanced settings', { exact: true }).click()
+  await page.getByLabel('Test approach', { exact: true }).selectOption('fixed')
+  await page.getByLabel('Maximum load', { exact: true }).fill('3')
   await page
-    .getByRole('button', { name: 'Validate an RPS', exact: true })
+    .getByLabel('Website or server address', { exact: true })
+    .fill(target)
+  await page
+    .getByRole('button', { name: 'Test my server', exact: true })
     .click()
-  await page.getByLabel('Requests / second', { exact: true }).fill('3')
-  await page.getByLabel('Target endpoint', { exact: true }).fill(target)
-  await page.getByRole('button', { name: 'Run test', exact: true }).click()
   await expect(
     page.getByRole('button', { name: 'Cancel', exact: true }),
   ).toBeVisible()
@@ -132,12 +149,10 @@ test('sidebar → real Docker test → suggestion → restore → cancel → com
   ).toBe('')
 
   await page.goto(`/system-design/load-tester?test=${capacityID}`)
-  await expect(
-    page.getByText('Suggested aggregate limit', { exact: true }),
-  ).toBeVisible()
+  await expect(page.getByText('Suggested limit', { exact: true })).toBeVisible()
   await page.setViewportSize({ width: 390, height: 844 })
   await expect(
-    page.getByRole('button', { name: 'Run test', exact: true }),
+    page.getByRole('button', { name: 'Test my server', exact: true }),
   ).toBeVisible()
   expect(
     await page.evaluate(
@@ -193,26 +208,28 @@ test('proxy preserves validation and blocks unsupported paths and cross-origin m
   ).toBe(403)
 })
 
-test('short fixed-RPS run displays insufficient evidence instead of a limit', async ({
+test('short API run still displays insufficient evidence instead of a limit', async ({
   page,
+  request,
 }) => {
-  await page.goto('/system-design/load-tester')
-  await expect(
-    page.getByText('Load tester connected', { exact: true }),
-  ).toBeVisible()
-  await page
-    .getByRole('button', { name: 'Validate an RPS', exact: true })
-    .click()
-  await page.getByLabel('Target endpoint', { exact: true }).fill(target)
-  await page.getByLabel('Requests / second', { exact: true }).fill('3')
-  await page.getByLabel('Seconds / step', { exact: true }).fill('3')
-  await page.getByRole('button', { name: 'Run test', exact: true }).click()
+  const response = await request.post('/api/load-tester/tests', {
+    data: {
+      targetUrl: target,
+      requestsPerSecond: 3,
+      durationSeconds: 3,
+      p95ThresholdMs: 1000,
+      requestTimeoutSeconds: 1,
+    },
+  })
+  expect(response.status()).toBe(202)
+  const job = await response.json()
+  await page.goto(`/system-design/load-tester?test=${job.id}`)
   const results = page.getByRole('region', {
     name: 'Test results',
     exact: true,
   })
   await expect(
-    results.getByText('Suggested aggregate limit', { exact: true }),
+    results.getByText('Suggested limit', { exact: true }),
   ).toBeVisible({ timeout: 30000 })
   await expect(results.locator('strong').first()).toHaveText('—')
   await expect(results).toContainText('Not enough passing evidence')
@@ -232,7 +249,9 @@ test('unavailable service explains recovery and disables starting a test', async
   await page.goto('/system-design/load-tester')
   await expect(page.getByText('Service offline', { exact: true })).toBeVisible()
   await expect(
-    page.getByRole('button', { name: 'Run test', exact: true }),
+    page.getByRole('button', { name: 'Test my server', exact: true }),
   ).toBeDisabled()
-  await expect(page.getByRole('status')).toContainText('docker compose up -d')
+  await expect(
+    page.getByRole('region', { name: 'Start load tester', exact: true }),
+  ).toBeVisible()
 })

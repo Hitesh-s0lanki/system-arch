@@ -8,7 +8,10 @@ services:
         condition: service_healthy
 
   redis:
-    image: redis:7.4-alpine
+    image: redis:7.4.7-alpine
+    mem_limit: 256m
+    cpus: 1
+    pids_limit: 128
     command: [redis-server, --appendonly, "yes", --maxmemory, 128mb, --maxmemory-policy, noeviction]
     volumes:
       - redis-data:/data

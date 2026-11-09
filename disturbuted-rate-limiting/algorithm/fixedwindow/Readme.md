@@ -5,7 +5,7 @@ incrementally, from in-memory implementations to distributed execution.
 
 ## Current milestone
 
-Implement and test an in-memory fixed-window rate limiter.
+Fixed-window enforcement with RAM and Redis integrations.
 
 ## Initial behavior
 
@@ -35,13 +35,12 @@ ended. It returns the number of keys removed. A window expires exactly at its
 end time; cleanup preserves counters in active windows. A removed key receives
 a fresh allowance when it next makes a request.
 
-Cleanup is explicit: the limiter starts no background goroutine. The application
-must schedule cleanup, including during idle periods. It is safe to call alongside
-`Allow`, but scans every tracked key under the same mutex, so large scans can delay
-requests. Removing keys does not guarantee the Go map releases its backing memory.
-`MaxKeys` bounds the number of entries, but not exact RAM usage: key lengths and
-map overhead also consume memory. The runnable server schedules cleanup through
-`maintenance.RunCleanup` and joins that worker during shutdown.
+The application schedules cleanup for idle periods; requests crossing a window
+boundary also retire the entire expired map. All entries share a boundary, so
+retirement takes constant time under the mutex instead of scanning identities.
+Cleanup returns only entries retired by that call; a request may already have
+retired them. Reclaiming detached memory is the Go garbage collector's job.
+Requests still share one mutex per limiter; benchmark hot policies before launch.
 
 ## Key capacity
 
@@ -73,12 +72,10 @@ Inspect `Decision.Reason` to distinguish outcomes:
 Remaining is zero for capacity rejections; it does not mean the new key consumed
 its allowance. Omitted or nonpositive `MaxKeys` makes construction fail.
 
-Existing-key decisions remain average O(1). A new key at full capacity can trigger
-an O(n) scan under the mutex. If every retained key is active, the result is cached
-until the next aligned window boundary: repeated capacity rejections avoid another
-scan. Nondecreasing internal time makes the cache safe during clock rollback.
-Cleanup remains O(n), and map growth makes insertion amortized rather than strict
-constant time.
+Existing-key decisions are average O(1). New-window requests retire the expired
+map before capacity checks. Capacity rejections do not scan or evict active keys.
+New-key insertion is amortized O(1), and garbage collection may still affect tail
+latency. Use separate limiter instances to isolate tenants and policies.
 
 ## Direct key validation
 
@@ -112,7 +109,7 @@ go test -run '^$' -bench . -benchmem ./tests/algorithm/fixedwindow
 
 The benchmarks cover allowed requests, rejected requests, parallel callers sharing
 one key, lookups across 1,024 existing keys, and cleanup of 100, 1,000, and 10,000
-expired keys, new-key insertions, and cached capacity rejections at those sizes.
+expired keys, new-key insertions, and capacity rejections at those sizes.
 They use a fixed clock. Setup is outside the timed sections, and
 cleanup receives a freshly populated limiter on each iteration.
 
@@ -122,8 +119,8 @@ latency. Results depend on the machine and workload; run benchmarks without race
 detection and use race detection separately to check correctness.
 
 New-key insertion benchmarks include key copying and map growth; warmed existing
-keys do not. Cached-capacity benchmarks exclude the first scan and do not measure
-worst-case expiration/cleanup latency.
+keys do not. Capacity benchmarks use a full active window and do not measure
+worst-case garbage collection latency.
 
 ## Boundary bursts and deployment scope
 
@@ -140,5 +137,5 @@ root and see the root README. Direct users of the library must schedule cleanup.
 Counters belong to one limiter instance and disappear on restart. Different
 RAM processes do not share quotas. The `redis` subpackage now provides shared
 atomic enforcement for the Docker proxy; see [the Docker guide](../../docs/docker.md)
-for Redis-specific clock, expiration, capacity, and failure behavior. Additional
-algorithms, metrics, and production deployment belong to later milestones.
+for Redis-specific clock, expiration, capacity, and failure behavior. See [production operation](../../docs/production.md) for protected metrics,
+policy revisions, HA clients, and deployment guidance.

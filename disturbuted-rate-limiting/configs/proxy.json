@@ -5,7 +5,8 @@
   "storage": {
     "mode": "ram",
     "namespace": "demo",
-    "timeout": "500ms"
+    "timeout": "500ms",
+    "pool_size": 32
   },
   "cleanup_interval": "1s",
   "upstream_timeout": "10s",
@@ -15,10 +16,17 @@
   "routes": [
     {
       "pattern": "/",
-      "policy": { "id": "default-ip", "identity": "ip", "per_route": false },
+      "policy": {
+        "id": "default-ip",
+        "identity": "ip",
+        "per_route": false
+      },
       "limit": 3,
       "window": "10s",
-      "max_keys": 10000
+      "max_keys": 10000,
+      "revision": "v1"
     }
-  ]
+  ],
+  "max_body_bytes": 1048576,
+  "max_concurrent": 128
 }

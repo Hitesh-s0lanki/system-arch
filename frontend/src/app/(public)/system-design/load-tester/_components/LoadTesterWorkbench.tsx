@@ -15,6 +15,7 @@ import { Input } from '@/components/ui/input'
 import { activeStatus, type TestConfig } from './types'
 import { ResultsPanel } from './ResultsPanel'
 import { useLoadTest } from './use-load-test'
+import { StartService } from './StartService'
 import { automaticLoads, timeAtLoad } from './workload'
 
 function Field({
@@ -173,16 +174,12 @@ export function LoadTesterWorkbench() {
           </button>
         </div>
         {tests.connection === 'offline' && (
-          <div
-            className="rounded-lg border border-border bg-muted px-4 py-3 text-sm"
-            role="status"
-          >
-            Start the local load tester with{' '}
-            <code className="rounded bg-background px-1.5 py-0.5 text-xs">
-              docker compose up -d
-            </code>{' '}
-            in <code>load-tester/</code>, then refresh the connection.
-          </div>
+          <StartService
+            onReady={() => {
+              void tests.refresh()
+              tests.retry()
+            }}
+          />
         )}
         <div className="grid items-start gap-5 min-[75rem]:grid-cols-[340px_minmax(0,1fr)]">
           <section

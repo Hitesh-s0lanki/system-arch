@@ -27,30 +27,57 @@ type Config struct {
 	Window    time.Duration
 	MaxKeys   int
 	Timeout   time.Duration
+	// Revision intentionally creates fresh quota state. Use coordinated cutovers.
+	Revision  string
+	TenantID  string
+	Semantics string
 }
 
 // Limiter uses one bounded hash per policy. Redis owns the clock and expiration.
 // The caller owns the client and must disable automatic command retries.
 type Limiter struct {
-	client    *redisclient.Client
+	client    redisclient.UniversalClient
 	config    Config
 	key       string
 	signature string
 }
 
-func New(client *redisclient.Client, config Config) (*Limiter, error) {
+func New(client redisclient.UniversalClient, config Config) (*Limiter, error) {
 	if client == nil || strings.TrimSpace(config.PolicyID) == "" || len(config.PolicyID) > 64 || strings.TrimSpace(config.Namespace) == "" || len(config.Namespace) > 128 || strings.ContainsAny(config.Namespace, "{}") {
 		return nil, fmt.Errorf("redis limiter: client, policy ID, and bounded namespace required")
 	}
 	if config.Limit <= 0 || int64(config.Limit) > 2147483647 || config.MaxKeys <= 0 || int64(config.MaxKeys) > 2147483647 || config.Window < time.Millisecond || config.Window%time.Millisecond != 0 || config.Timeout <= 0 {
 		return nil, fmt.Errorf("redis limiter: positive bounded limits, millisecond-aligned window, and timeout required")
 	}
-	if client.Options().MaxRetries != 0 {
+	retries := -1
+	switch c := client.(type) {
+	case *redisclient.Client:
+		if c == nil {
+			return nil, fmt.Errorf("redis limiter: client required")
+		}
+		retries = c.Options().MaxRetries
+	case *redisclient.ClusterClient:
+		if c == nil {
+			return nil, fmt.Errorf("redis limiter: client required")
+		}
+		retries = c.Options().MaxRetries
+		if retries < 0 {
+			retries = 0
+		}
+	}
+	if retries != 0 {
 		return nil, fmt.Errorf("redis limiter: disable automatic retries with MaxRetries: -1")
 	}
-	sum := sha256.Sum256([]byte(config.PolicyID))
+	if len(config.Revision) > 64 || len(config.TenantID) > 128 || len(config.Semantics) > 256 {
+		return nil, fmt.Errorf("redis limiter: scope too long")
+	}
+	scope := config.PolicyID
+	if config.Revision != "" || config.TenantID != "" {
+		scope = fmt.Sprintf("%d:%s%d:%s%d:%s", len(config.PolicyID), config.PolicyID, len(config.Revision), config.Revision, len(config.TenantID), config.TenantID)
+	}
+	sum := sha256.Sum256([]byte(scope))
 	return &Limiter{client: client, config: config, key: config.Namespace + ":fw:{" + hex.EncodeToString(sum[:]) + "}",
-		signature: fmt.Sprintf("%d:%d:%d", config.Limit, config.Window.Milliseconds(), config.MaxKeys)}, nil
+		signature: fmt.Sprintf("%d:%d:%d:%s", config.Limit, config.Window.Milliseconds(), config.MaxKeys, config.Semantics)}, nil
 }
 
 func (l *Limiter) Evaluate(ctx context.Context, key string) (ratelimit.Decision, error) {
@@ -62,7 +89,7 @@ func (l *Limiter) Evaluate(ctx context.Context, key string) (ratelimit.Decision,
 	}
 	ctx, cancel := context.WithTimeout(ctx, l.config.Timeout)
 	defer cancel()
-	values, err := script.Run(ctx, l.client, []string{l.key}, key, l.config.Limit, l.config.Window.Milliseconds(), l.config.MaxKeys, l.signature).Int64Slice()
+	values, err := runOnce(ctx, l.client, script, []string{l.key, l.key + ":config"}, key, l.config.Limit, l.config.Window.Milliseconds(), l.config.MaxKeys, l.signature).Int64Slice()
 	if err != nil {
 		return ratelimit.Decision{}, fmt.Errorf("redis limiter: decision failed: %w", err)
 	}
@@ -79,4 +106,56 @@ func (l *Limiter) Evaluate(ctx context.Context, key string) (ratelimit.Decision,
 	default:
 		return ratelimit.Decision{}, fmt.Errorf("redis limiter: invalid decision")
 	}
+}
+
+// Ready checks policy compatibility and write capability without charging quota.
+// Probe keys share the policy hash slot for Cluster and expire after ten seconds.
+var readinessScript = redisclient.NewScript(`
+redis.call('SET', KEYS[3], ARGV[1], 'NX')
+if redis.call('GET', KEYS[3]) ~= ARGV[1] then return redis.error_reply('policy configuration mismatch') end
+local config = redis.call('HGET', KEYS[1], '_config')
+if config and config ~= ARGV[1] then return redis.error_reply('policy configuration mismatch') end
+redis.call('TIME')
+redis.call('HLEN', KEYS[1])
+redis.call('HSET', KEYS[2], '_probe', '1')
+redis.call('PEXPIRE', KEYS[2], 10000)
+return 1`)
+
+func (l *Limiter) Ready(ctx context.Context) error {
+	ctx, cancel := context.WithTimeout(ctx, l.config.Timeout)
+	defer cancel()
+	return readinessScript.Run(ctx, l.client, []string{l.key, l.key + ":probe", l.key + ":config"}, l.signature).Err()
+}
+
+func (l *Limiter) Usage(ctx context.Context) (float64, error) {
+	ctx, cancel := context.WithTimeout(ctx, l.config.Timeout)
+	defer cancel()
+	count, err := l.client.HLen(ctx, l.key).Result()
+	if count < 3 {
+		count = 3
+	}
+	return float64(count-3) / float64(l.config.MaxKeys), err
+}
+
+// nonRetryCmd also disables Cluster's retry loop on ambiguous I/O failures.
+// MOVED/ASK and NOSCRIPT responses are safe: the script did not execute there.
+type nonRetryCmd struct{ *redisclient.Cmd }
+
+func (*nonRetryCmd) NoRetry() bool { return true }
+func runOnce(ctx context.Context, client redisclient.UniversalClient, script *redisclient.Script, keys []string, args ...any) *redisclient.Cmd {
+	invoke := func(command, code string) *redisclient.Cmd {
+		argv := []any{command, code, len(keys)}
+		for _, key := range keys {
+			argv = append(argv, key)
+		}
+		argv = append(argv, args...)
+		cmd := &nonRetryCmd{redisclient.NewCmd(ctx, argv...)}
+		_ = client.Process(ctx, cmd)
+		return cmd.Cmd
+	}
+	cmd := invoke("evalsha", script.Hash())
+	if redisclient.HasErrorPrefix(cmd.Err(), "NOSCRIPT") {
+		return invoke("eval", source)
+	}
+	return cmd
 }

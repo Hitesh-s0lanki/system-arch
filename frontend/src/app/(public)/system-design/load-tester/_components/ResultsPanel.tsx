@@ -12,6 +12,18 @@ import {
 import { Button } from '@/components/ui/button'
 import { api, apiBase, type Job, type Report } from './types'
 
+function readableReason(reason: string): string {
+  if (reason.includes('maxErrorRate'))
+    return 'Too many requests failed or were rejected at this load.'
+  if (reason.includes('p95ThresholdMs'))
+    return 'Responses were slower than the chosen response-time limit.'
+  if (reason.includes('generator') || reason.includes('Incomplete measurement'))
+    return 'The test tool could not send all the requested traffic. Try this load again with more test resources.'
+  if (reason.includes('100 successful') || reason.includes('latency threshold'))
+    return 'There were not enough successful responses to judge this load. Try a longer test.'
+  return reason
+}
+
 export function ResultsPanel({
   job,
   report,
@@ -133,8 +145,8 @@ export function ResultsPanel({
           </p>
         )}
         <p className="mt-2 text-xs">
-          Provisional guidance for this endpoint and workload. Apply it in your
-          gateway; it is not a per-user quota.
+          A starting point for this address and test. This is a total traffic
+          limit, not a separate limit for each visitor.
         </p>
       </div>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -241,9 +253,9 @@ export function ResultsPanel({
                 step.reasons.map((reason) => (
                   <li key={`${i}-${reason}`}>
                     <strong className="font-medium text-foreground">
-                      {step.requestedRps} RPS:
+                      {step.requestedRps} requests / second:
                     </strong>{' '}
-                    {reason}
+                    {readableReason(reason)}
                   </li>
                 )),
               )}
