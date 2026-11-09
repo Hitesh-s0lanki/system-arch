@@ -84,7 +84,9 @@ func TestRedisReadinessOOMAndRevisionMigration(t *testing.T) {
 
 func TestSentinelPromotionPreservesReplicatedQuota(t *testing.T) {
 	primaryAddress := testredis.Address(t)
-	primary := testredis.Start(t, primaryAddress, "", false)
+	// The fixture shuts down only after confirming replication below. Disable
+	// Redis's graceful replica wait so shutdown completes within the client timeout.
+	primary := testredis.Start(t, primaryAddress, "shutdown-timeout 0\nrepl-diskless-sync-delay 0", false)
 	host, port, _ := net.SplitHostPort(primaryAddress)
 	replicaAddress := testredis.Address(t)
 	replica := testredis.Start(t, replicaAddress, fmt.Sprintf("replicaof %s %s\nrepl-diskless-sync-delay 0", host, port), false)
