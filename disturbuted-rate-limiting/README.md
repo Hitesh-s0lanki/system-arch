@@ -4,6 +4,11 @@ A Go fixed-window rate limiter with embedded-library and reverse-proxy integrati
 The current algorithm is fixed window, with RAM or Redis storage. It can run as
 an embedded Go library, a demonstration server, or a configurable reverse proxy.
 
+For embedding in an application, use the [Go SDK](docs/sdk.md):
+`sdk.NewMemory` or `sdk.NewRedis` constructs the policy registry and independent
+fixed-window limiters. Reuse the client for `Check` calls or pass it directly to
+the HTTP middleware. Run `go run ./examples/sdk` for a complete local example.
+
 ## Docker quick start
 
 RAM mode (gateway plus a private demonstration backend):
@@ -40,6 +45,7 @@ Trusted application code resolves identity and chooses a policy
 | Package | Responsibility |
 | --- | --- |
 | Root `ratelimit` | Algorithm-independent decision and rejection reasons |
+| `sdk` | Embedded RAM/Redis constructors, policy checks, readiness, and cleanup |
 | `algorithm/fixedwindow` | Counters, windows, capacity, cleanup, concurrency |
 | `algorithm/fixedwindow/redis` | Atomic Redis decisions, capacity, and expiry |
 | `identity` | Bounded identity inputs, canonical IP addresses, namespaced keys |
