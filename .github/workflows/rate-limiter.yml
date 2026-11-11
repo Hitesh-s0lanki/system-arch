@@ -1,14 +1,24 @@
 name: Rate limiter
+
 on:
   push:
+    branches: [main]
     paths: ['disturbuted-rate-limiting/**', '.github/workflows/rate-limiter.yml']
   pull_request:
     paths: ['disturbuted-rate-limiting/**', '.github/workflows/rate-limiter.yml']
+  workflow_dispatch:
+
 permissions:
   contents: read
+
+concurrency:
+  group: rate-limiter-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   verify:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     defaults:
       run:
         working-directory: disturbuted-rate-limiting
@@ -19,32 +29,129 @@ jobs:
         options: --health-cmd "redis-cli ping" --health-interval 2s --health-timeout 2s --health-retries 15
     env:
       REDIS_TEST_URL: redis://127.0.0.1:16379/0
-      REDIS_SERVER_BIN: /usr/bin/redis-server
+      REDIS_SERVER_BIN: /tmp/redis-7.4.7/src/redis-server
+      TOKEN_BUCKET_TEST_BINARY: /tmp/ratelimitd-ci
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: actions/setup-go@v5
         with:
           go-version-file: disturbuted-rate-limiting/go.mod
           cache-dependency-path: disturbuted-rate-limiting/go.sum
-      - run: sudo apt-get update && sudo apt-get install -y redis-server
-      - run: test -z "$(gofmt -l $(find . -name '*.go'))"
-      - run: go mod verify
-      - run: make integration
-      - run: go vet ./...
-      - run: go run golang.org/x/vuln/cmd/govulncheck@v1.9.0 ./...
-      - run: CGO_ENABLED=0 go build ./cmd/ratelimitd
-      - run: docker compose config --quiet && docker compose -f compose.yaml -f compose.redis.yaml -f tests/load/compose.yaml config --quiet
-      - run: docker build -t rate-limiter:ci .
-  load:
+      - name: Build isolated Redis test server
+        timeout-minutes: 5
+        run: |
+          # Use the runner's compiler instead of depending on apt mirror DNS.
+          curl --fail --location --retry 3 --connect-timeout 10 --max-time 60 \
+            https://download.redis.io/releases/redis-7.4.7.tar.gz -o /tmp/redis-7.4.7.tar.gz
+          echo 'c97e57b0df330a9e091cacff012bebe763c275398cf36ff44cdba876814b595b  /tmp/redis-7.4.7.tar.gz' | sha256sum --check
+          tar -xzf /tmp/redis-7.4.7.tar.gz -C /tmp
+          make -C /tmp/redis-7.4.7 -j2 MALLOC=libc BUILD_TLS=no OPTIMIZATION=-O2 redis-server
+          "$REDIS_SERVER_BIN" --version
+      - name: Check formatting and dependencies
+        run: |
+          unformatted=$(find . -name '*.go' -print0 | xargs -0 gofmt -l)
+          if [ -n "$unformatted" ]; then
+            printf '%s\n' "$unformatted"
+            exit 1
+          fi
+          go mod verify
+      - name: Build all packages and binary integration fixture
+        run: |
+          CGO_ENABLED=0 go build ./...
+          go build -race -o "$TOKEN_BUCKET_TEST_BINARY" ./cmd/ratelimitd
+      - name: Run unit, Redis, failure, and binary integration tests
+        run: make integration
+      - name: Vet and vulnerability scan
+        run: |
+          go vet ./...
+          go run golang.org/x/vuln/cmd/govulncheck@v1.9.0 ./...
+
+  docker:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     defaults:
       run:
         working-directory: disturbuted-rate-limiting
+    env:
+      RATE_LIMIT_IMAGE: rate-limiter:ci
     steps:
       - uses: actions/checkout@v4
-      - run: docker compose -f compose.yaml -f compose.redis.yaml -f tests/load/compose.yaml up -d --build --wait
-      - run: docker run --rm --network host -v "$PWD/tests/load:/work:ro" -e TARGETS=http://127.0.0.1:8088,http://127.0.0.1:8089 -e DURATION=30s -e P95_MS=100 -e P99_MS=200 grafana/k6:1.0.0 run /work/sustained.js
-      - if: always()
-        run: docker compose -f compose.yaml -f compose.redis.yaml -f tests/load/compose.yaml logs --no-color
-      - if: always()
-        run: docker compose -f compose.yaml -f compose.redis.yaml -f tests/load/compose.yaml down -v
+        with:
+          persist-credentials: false
+      - name: Validate Compose configurations
+        run: |
+          docker compose config --quiet
+          docker compose -f compose.yaml -f compose.redis.yaml config --quiet
+          docker compose -f compose.yaml -f compose.redis.yaml -f tests/load/compose.yaml config --quiet
+      - name: Build runtime image
+        run: docker build --pull --target runtime -t "$RATE_LIMIT_IMAGE" .
+      - name: Exercise RAM and Redis containers end to end
+        run: python3 tests/docker/smoke.py
+      - name: Start shared Redis replicas for load test
+        run: docker compose -p rate-limiter-ci -f compose.yaml -f compose.redis.yaml -f tests/load/compose.yaml up -d --no-build --wait --wait-timeout 90
+      - name: Check sustained traffic and latency
+        run: docker run --rm --network rate-limiter-ci_default -v "$PWD/tests/load:/work:ro" -e TARGETS=http://gateway:8080,http://replica:8080 -e DURATION=30s -e P95_MS=100 -e P99_MS=200 grafana/k6:1.0.0 run /work/sustained.js
+      - name: Container logs
+        if: always()
+        run: docker compose -p rate-limiter-ci -f compose.yaml -f compose.redis.yaml -f tests/load/compose.yaml logs --no-color
+      - name: Clean up load stack
+        if: always()
+        run: docker compose -p rate-limiter-ci -f compose.yaml -f compose.redis.yaml -f tests/load/compose.yaml down -v --remove-orphans
+
+  publish:
+    # Only trusted default-branch changes can access registry credentials.
+    if: github.event_name != 'pull_request' && github.ref_name == github.event.repository.default_branch
+    needs: [verify, docker]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      packages: write
+    env:
+      DOCKERHUB_USERNAME: ${{ vars.DOCKERHUB_USERNAME }}
+      DOCKERHUB_IMAGE: ${{ vars.DOCKERHUB_IMAGE }}
+      REPOSITORY: ${{ github.repository }}
+      REVISION: ${{ github.sha }}
+    steps:
+      - name: Check Docker Hub configuration
+        env:
+          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+        run: |
+          test -n "$DOCKERHUB_USERNAME" || { echo 'Set repository variable DOCKERHUB_USERNAME'; exit 1; }
+          test -n "$DOCKERHUB_TOKEN" || { echo 'Set repository secret DOCKERHUB_TOKEN with write access'; exit 1; }
+          echo "GHCR_IMAGE=ghcr.io/${REPOSITORY,,}/distributed-rate-limiter" >> "$GITHUB_ENV"
+          echo "HUB_IMAGE=${DOCKERHUB_IMAGE:-$DOCKERHUB_USERNAME/distributed-rate-limiter}" >> "$GITHUB_ENV"
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/login-action@v4
+        with:
+          username: ${{ vars.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Publish multi-arch image to both registries
+        uses: docker/build-push-action@v6
+        with:
+          context: disturbuted-rate-limiting
+          target: runtime
+          platforms: linux/amd64,linux/arm64
+          push: true
+          provenance: false
+          tags: |
+            ${{ env.GHCR_IMAGE }}:sha-${{ env.REVISION }}
+            ${{ env.GHCR_IMAGE }}:latest
+            ${{ env.HUB_IMAGE }}:sha-${{ env.REVISION }}
+            ${{ env.HUB_IMAGE }}:latest
+      - name: Record published tags
+        run: |
+          printf 'Published %s and %s for linux/amd64 and linux/arm64 (tags: latest, sha-%s)\n' "$GHCR_IMAGE" "$HUB_IMAGE" "$REVISION" >> "$GITHUB_STEP_SUMMARY"

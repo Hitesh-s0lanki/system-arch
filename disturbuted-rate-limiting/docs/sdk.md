@@ -119,3 +119,21 @@ call `client.CleanupExpired()` periodically, or run it through
 `maintenance.RunCleanup` in a goroutine whose cancellation and shutdown you own.
 `CleanupExpired` returns the number of removed identities and does nothing for
 Redis clients. Always shut down application requests before closing Redis.
+
+## Sliding-window logs
+
+Use `sdk.NewSlidingWindowMemory` with `Policy.SlidingWindow` to enforce an exact
+rolling interval. For shared Redis state, use `sdk.NewSlidingWindowRedis` with
+the same `RedisConfig` structure and `Policy.SlidingWindow`. Existing `NewMemory`
+and `NewRedis` constructors continue to use `Policy.FixedWindow`.
+
+See [the sliding-window guide](sliding-window.md) for complete configuration,
+storage details, and the RAM/Redis integration test command.
+
+## Sliding-window counters
+
+Use `sdk.NewSlidingCounterMemory` or `sdk.NewSlidingCounterRedis` with
+`Policy.SlidingCounter` to estimate rolling usage using two weighted counters.
+See [the counter guide](sliding-window-counter.md) for configuration, precision,
+retry semantics, and tests. The existing SlidingWindow constructors retain
+exact timestamp-log behavior.

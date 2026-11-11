@@ -1,0 +1,673 @@
+?   	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting	[no test files]
+?   	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/algorithm/fixedwindow	[no test files]
+?   	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/algorithm/fixedwindow/redis	[no test files]
+?   	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/algorithm/leakybucket	[no test files]
+?   	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/algorithm/leakybucket/redis	[no test files]
+?   	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/algorithm/slidingcounter	[no test files]
+?   	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/algorithm/slidingcounter/redis	[no test files]
+?   	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/algorithm/slidingwindow	[no test files]
+?   	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/algorithm/slidingwindow/redis	[no test files]
+	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/algorithm/tokenbucket		coverage: 0.0% of statements
+	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/algorithm/tokenbucket/redis		coverage: 0.0% of statements
+?   	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/auth	[no test files]
+?   	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/cmd/ratelimitd	[no test files]
+?   	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/examples/backend	[no test files]
+?   	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/examples/identitybased	[no test files]
+?   	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/examples/sdk	[no test files]
+?   	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/identity	[no test files]
+?   	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/internal/app	[no test files]
+?   	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/internal/httpserver	[no test files]
+	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/internal/proxyapp		coverage: 0.0% of statements
+?   	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/internal/redisutil	[no test files]
+?   	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/internal/telemetry	[no test files]
+?   	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/maintenance	[no test files]
+?   	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/middleware/http	[no test files]
+?   	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/policy	[no test files]
+	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/sdk		coverage: 0.0% of statements
+?   	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/service	[no test files]
+=== RUN   TestNewRejectsInvalidCapacity
+=== RUN   TestNewRejectsInvalidCapacity/0
+=== RUN   TestNewRejectsInvalidCapacity/-1
+--- PASS: TestNewRejectsInvalidCapacity (0.00s)
+    --- PASS: TestNewRejectsInvalidCapacity/0 (0.00s)
+    --- PASS: TestNewRejectsInvalidCapacity/-1 (0.00s)
+=== RUN   TestAllowCapacity
+--- PASS: TestAllowCapacity (0.00s)
+=== RUN   TestAllowCapacityConcurrent
+--- PASS: TestAllowCapacityConcurrent (0.00s)
+=== RUN   TestInvalidKeysDoNotConsumeCapacity
+--- PASS: TestInvalidKeysDoNotConsumeCapacity (0.00s)
+=== RUN   TestShortAndUnusualWindows
+=== RUN   TestShortAndUnusualWindows/1ns
+=== RUN   TestShortAndUnusualWindows/1.5s
+=== RUN   TestShortAndUnusualWindows/7s
+--- PASS: TestShortAndUnusualWindows (0.00s)
+    --- PASS: TestShortAndUnusualWindows/1ns (0.00s)
+    --- PASS: TestShortAndUnusualWindows/1.5s (0.00s)
+    --- PASS: TestShortAndUnusualWindows/7s (0.00s)
+=== RUN   TestConcurrentExpirationAndCleanup
+--- PASS: TestConcurrentExpirationAndCleanup (0.00s)
+=== RUN   TestAllowConcurrent
+--- PASS: TestAllowConcurrent (0.02s)
+=== RUN   TestNew
+=== RUN   TestNew/valid_configuration
+=== RUN   TestNew/zero_limit
+=== RUN   TestNew/negative_limit
+=== RUN   TestNew/zero_window
+=== RUN   TestNew/negative_window
+--- PASS: TestNew (0.00s)
+    --- PASS: TestNew/valid_configuration (0.00s)
+    --- PASS: TestNew/zero_limit (0.00s)
+    --- PASS: TestNew/negative_limit (0.00s)
+    --- PASS: TestNew/zero_window (0.00s)
+    --- PASS: TestNew/negative_window (0.00s)
+=== RUN   TestNewRejectsInvalidOptions
+=== RUN   TestNewRejectsInvalidOptions/nil_option
+=== RUN   TestNewRejectsInvalidOptions/nil_clock
+--- PASS: TestNewRejectsInvalidOptions (0.00s)
+    --- PASS: TestNewRejectsInvalidOptions/nil_option (0.00s)
+    --- PASS: TestNewRejectsInvalidOptions/nil_clock (0.00s)
+=== RUN   TestAllow
+--- PASS: TestAllow (0.00s)
+=== RUN   TestAllowClockRollback
+--- PASS: TestAllowClockRollback (0.00s)
+=== RUN   TestCleanupExpiredClockRollback
+--- PASS: TestCleanupExpiredClockRollback (0.00s)
+=== RUN   TestCleanupExpired
+--- PASS: TestCleanupExpired (0.00s)
+PASS
+coverage: 0.0% of statements in ./algorithm/tokenbucket/..., ./sdk, ./internal/proxyapp
+ok  	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/tests/algorithm/fixedwindow	1.384s	coverage: 0.0% of statements in ./algorithm/tokenbucket/..., ./sdk, ./internal/proxyapp
+=== RUN   TestSharedAtomicAllowance
+--- PASS: TestSharedAtomicAllowance (0.15s)
+=== RUN   TestSharedCapacityAndMetadataIsolation
+--- PASS: TestSharedCapacityAndMetadataIsolation (0.08s)
+=== RUN   TestExpiryAndConfigurationMismatch
+--- PASS: TestExpiryAndConfigurationMismatch (0.05s)
+=== RUN   TestValidationWithoutRedis
+--- PASS: TestValidationWithoutRedis (0.00s)
+PASS
+coverage: 0.0% of statements in ./algorithm/tokenbucket/..., ./sdk, ./internal/proxyapp
+ok  	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/tests/algorithm/fixedwindow/redis	1.426s	coverage: 0.0% of statements in ./algorithm/tokenbucket/..., ./sdk, ./internal/proxyapp
+=== RUN   TestDrainRetryAndClockRollback
+--- PASS: TestDrainRetryAndClockRollback (0.00s)
+=== RUN   TestCapacityValidationAndCancellation
+--- PASS: TestCapacityValidationAndCancellation (0.00s)
+=== RUN   TestConcurrentAdmission
+--- PASS: TestConcurrentAdmission (0.00s)
+=== RUN   TestFractionalRateRetry
+--- PASS: TestFractionalRateRetry (0.00s)
+=== RUN   TestRandomizedIntegerReference
+=== RUN   TestRandomizedIntegerReference/3-1s
+=== RUN   TestRandomizedIntegerReference/7-13ms
+=== RUN   TestRandomizedIntegerReference/10-1ns
+=== RUN   TestRandomizedIntegerReference/1-37ns
+--- PASS: TestRandomizedIntegerReference (0.15s)
+    --- PASS: TestRandomizedIntegerReference/3-1s (0.03s)
+    --- PASS: TestRandomizedIntegerReference/7-13ms (0.03s)
+    --- PASS: TestRandomizedIntegerReference/10-1ns (0.05s)
+    --- PASS: TestRandomizedIntegerReference/1-37ns (0.03s)
+=== RUN   TestConcurrentCleanupAndUsage
+--- PASS: TestConcurrentCleanupAndUsage (0.20s)
+PASS
+coverage: 0.0% of statements in ./algorithm/tokenbucket/..., ./sdk, ./internal/proxyapp
+ok  	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/tests/algorithm/leakybucket	1.451s	coverage: 0.0% of statements in ./algorithm/tokenbucket/..., ./sdk, ./internal/proxyapp
+=== RUN   TestRAMRedisDrainParity
+--- PASS: TestRAMRedisDrainParity (0.21s)
+=== RUN   TestReplicasConcurrencyCapacityAndCompatibility
+--- PASS: TestReplicasConcurrencyCapacityAndCompatibility (0.06s)
+=== RUN   TestExpiryInvalidKeysAndReadiness
+--- PASS: TestExpiryInvalidKeysAndReadiness (0.11s)
+=== RUN   TestConstructorValidation
+--- PASS: TestConstructorValidation (0.00s)
+=== RUN   TestRandomizedRAMRedisParity
+=== RUN   TestRandomizedRAMRedisParity/3-1s
+=== RUN   TestRandomizedRAMRedisParity/7-13ms
+=== RUN   TestRandomizedRAMRedisParity/100-1ms
+--- PASS: TestRandomizedRAMRedisParity (3.15s)
+    --- PASS: TestRandomizedRAMRedisParity/3-1s (0.89s)
+    --- PASS: TestRandomizedRAMRedisParity/7-13ms (1.19s)
+    --- PASS: TestRandomizedRAMRedisParity/100-1ms (1.06s)
+=== RUN   TestPartialDrainExpiryAndPolicyScope
+--- PASS: TestPartialDrainExpiryAndPolicyScope (0.02s)
+=== RUN   TestBackendDeadlineFailsClosed
+--- PASS: TestBackendDeadlineFailsClosed (0.04s)
+=== RUN   TestLostReplyDoesNotReplayAdmission
+--- PASS: TestLostReplyDoesNotReplayAdmission (0.03s)
+PASS
+coverage: 0.0% of statements in ./algorithm/tokenbucket/..., ./sdk, ./internal/proxyapp
+ok  	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/tests/algorithm/leakybucket/redis	4.769s	coverage: 0.0% of statements in ./algorithm/tokenbucket/..., ./sdk, ./internal/proxyapp
+=== RUN   TestWeightedBoundaryAndRetry
+--- PASS: TestWeightedBoundaryAndRetry (0.00s)
+=== RUN   TestRandomizedAgainstTimestampBuckets
+--- PASS: TestRandomizedAgainstTimestampBuckets (0.25s)
+=== RUN   TestConcurrentAdmissionCapacityAndValidation
+--- PASS: TestConcurrentAdmissionCapacityAndValidation (0.00s)
+PASS
+coverage: 0.0% of statements in ./algorithm/tokenbucket/..., ./sdk, ./internal/proxyapp
+ok  	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/tests/algorithm/slidingcounter	1.335s	coverage: 0.0% of statements in ./algorithm/tokenbucket/..., ./sdk, ./internal/proxyapp
+=== RUN   TestRedisMatchesRAMAcrossBoundaries
+--- PASS: TestRedisMatchesRAMAcrossBoundaries (0.17s)
+PASS
+coverage: 0.0% of statements in ./algorithm/tokenbucket/..., ./sdk, ./internal/proxyapp
+ok  	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/tests/algorithm/slidingcounter/redis	1.343s	coverage: 0.0% of statements in ./algorithm/tokenbucket/..., ./sdk, ./internal/proxyapp
+=== RUN   TestRollingWindowAndRollback
+--- PASS: TestRollingWindowAndRollback (0.00s)
+=== RUN   TestConcurrentQuotaAndCapacity
+--- PASS: TestConcurrentQuotaAndCapacity (0.00s)
+=== RUN   TestValidationAndCancellation
+--- PASS: TestValidationAndCancellation (0.00s)
+=== RUN   TestRandomizedReference
+--- PASS: TestRandomizedReference (0.01s)
+=== RUN   TestConcurrentCleanupPreservesActiveLog
+--- PASS: TestConcurrentCleanupPreservesActiveLog (0.00s)
+PASS
+coverage: 0.0% of statements in ./algorithm/tokenbucket/..., ./sdk, ./internal/proxyapp
+ok  	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/tests/algorithm/slidingwindow	1.111s	coverage: 0.0% of statements in ./algorithm/tokenbucket/..., ./sdk, ./internal/proxyapp
+=== RUN   TestRAMRedisRollingParity
+--- PASS: TestRAMRedisRollingParity (0.03s)
+=== RUN   TestReplicasConcurrencyCapacityAndCompatibility
+--- PASS: TestReplicasConcurrencyCapacityAndCompatibility (0.04s)
+=== RUN   TestExpiryInvalidKeysAndReadiness
+--- PASS: TestExpiryInvalidKeysAndReadiness (0.11s)
+=== RUN   TestConstructorValidation
+--- PASS: TestConstructorValidation (0.00s)
+=== RUN   TestConcurrentIdentityCapacity
+--- PASS: TestConcurrentIdentityCapacity (0.03s)
+PASS
+coverage: 0.0% of statements in ./algorithm/tokenbucket/..., ./sdk, ./internal/proxyapp
+ok  	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/tests/algorithm/slidingwindow/redis	1.328s	coverage: 0.0% of statements in ./algorithm/tokenbucket/..., ./sdk, ./internal/proxyapp
+=== RUN   TestRandomizedExactCreditReference
+--- PASS: TestRandomizedExactCreditReference (0.13s)
+=== RUN   TestLargeRateArithmeticAndConcurrentMaintenance
+--- PASS: TestLargeRateArithmeticAndConcurrentMaintenance (0.04s)
+=== RUN   TestBurstFractionalRefillAndClockRollback
+--- PASS: TestBurstFractionalRefillAndClockRollback (0.00s)
+=== RUN   TestCleanupPreservesPartiallyEmptyBuckets
+--- PASS: TestCleanupPreservesPartiallyEmptyBuckets (0.00s)
+=== RUN   TestConcurrentConsumption
+--- PASS: TestConcurrentConsumption (0.00s)
+=== RUN   TestValidationAndCancellation
+--- PASS: TestValidationAndCancellation (0.00s)
+=== RUN   TestRetryRoundsUp
+--- PASS: TestRetryRoundsUp (0.00s)
+=== RUN   TestRepeatedRejectionsDoNotDelayTokenBoundary
+--- PASS: TestRepeatedRejectionsDoNotDelayTokenBoundary (0.00s)
+PASS
+coverage: 13.4% of statements in ./algorithm/tokenbucket/..., ./sdk, ./internal/proxyapp
+ok  	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/tests/algorithm/tokenbucket	1.588s	coverage: 13.4% of statements in ./algorithm/tokenbucket/..., ./sdk, ./internal/proxyapp
+=== RUN   TestLostReplyDoesNotReplayTokenConsumption
+--- PASS: TestLostReplyDoesNotReplayTokenConsumption (0.01s)
+=== RUN   TestConfigurationSignatureIncludesBurstAndSemantics
+--- PASS: TestConfigurationSignatureIncludesBurstAndSemantics (0.01s)
+=== RUN   TestRAMRedisRefillParity
+--- PASS: TestRAMRedisRefillParity (0.03s)
+=== RUN   TestReplicasConcurrencyCapacityAndCompatibility
+--- PASS: TestReplicasConcurrencyCapacityAndCompatibility (0.04s)
+=== RUN   TestExpiryInvalidKeysAndReadiness
+--- PASS: TestExpiryInvalidKeysAndReadiness (0.11s)
+=== RUN   TestConstructorValidation
+--- PASS: TestConstructorValidation (0.00s)
+=== RUN   TestExpiryWaitsForFullRefillAcrossIdentities
+--- PASS: TestExpiryWaitsForFullRefillAcrossIdentities (0.01s)
+=== RUN   TestRepeatedFractionalChecksAndRandomizedParity
+--- PASS: TestRepeatedFractionalChecksAndRandomizedParity (2.49s)
+PASS
+coverage: 17.4% of statements in ./algorithm/tokenbucket/..., ./sdk, ./internal/proxyapp
+ok  	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/tests/algorithm/tokenbucket/redis	3.853s	coverage: 17.4% of statements in ./algorithm/tokenbucket/..., ./sdk, ./internal/proxyapp
+=== RUN   TestBearer
+--- PASS: TestBearer (0.00s)
+=== RUN   TestBearerConfigValidation
+--- PASS: TestBearerConfigValidation (0.00s)
+=== RUN   TestOIDCVerificationAndSigningKeyRotation
+--- PASS: TestOIDCVerificationAndSigningKeyRotation (0.35s)
+PASS
+coverage: 0.0% of statements in ./algorithm/tokenbucket/..., ./sdk, ./internal/proxyapp
+ok  	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/tests/auth	1.479s	coverage: 0.0% of statements in ./algorithm/tokenbucket/..., ./sdk, ./internal/proxyapp
+=== RUN   TestKeyIPNormalization
+--- PASS: TestKeyIPNormalization (0.00s)
+=== RUN   TestKeyRejectsInvalidInputs
+=== RUN   TestKeyRejectsInvalidInputs/blank_policy
+=== RUN   TestKeyRejectsInvalidInputs/long_policy
+=== RUN   TestKeyRejectsInvalidInputs/blank_tenant
+=== RUN   TestKeyRejectsInvalidInputs/long_tenant
+=== RUN   TestKeyRejectsInvalidInputs/blank_subject
+=== RUN   TestKeyRejectsInvalidInputs/long_subject
+=== RUN   TestKeyRejectsInvalidInputs/invalid_IP
+=== RUN   TestKeyRejectsInvalidInputs/IP_with_port
+=== RUN   TestKeyRejectsInvalidInputs/IP_with_zone
+=== RUN   TestKeyRejectsInvalidInputs/unknown_kind
+=== RUN   TestKeyRejectsInvalidInputs/blank_route
+=== RUN   TestKeyRejectsInvalidInputs/long_route
+--- PASS: TestKeyRejectsInvalidInputs (0.00s)
+    --- PASS: TestKeyRejectsInvalidInputs/blank_policy (0.00s)
+    --- PASS: TestKeyRejectsInvalidInputs/long_policy (0.00s)
+    --- PASS: TestKeyRejectsInvalidInputs/blank_tenant (0.00s)
+    --- PASS: TestKeyRejectsInvalidInputs/long_tenant (0.00s)
+    --- PASS: TestKeyRejectsInvalidInputs/blank_subject (0.00s)
+    --- PASS: TestKeyRejectsInvalidInputs/long_subject (0.00s)
+    --- PASS: TestKeyRejectsInvalidInputs/invalid_IP (0.00s)
+    --- PASS: TestKeyRejectsInvalidInputs/IP_with_port (0.00s)
+    --- PASS: TestKeyRejectsInvalidInputs/IP_with_zone (0.00s)
+    --- PASS: TestKeyRejectsInvalidInputs/unknown_kind (0.00s)
+    --- PASS: TestKeyRejectsInvalidInputs/blank_route (0.00s)
+    --- PASS: TestKeyRejectsInvalidInputs/long_route (0.00s)
+=== RUN   TestKeyComponentBoundaries
+--- PASS: TestKeyComponentBoundaries (0.00s)
+PASS
+coverage: 0.0% of statements in ./algorithm/tokenbucket/..., ./sdk, ./internal/proxyapp
+ok  	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/tests/identity	1.088s	coverage: 0.0% of statements in ./algorithm/tokenbucket/..., ./sdk, ./internal/proxyapp
+=== RUN   TestHTTPEndToEnd
+--- PASS: TestHTTPEndToEnd (0.01s)
+=== RUN   TestHTTPOverloadIsNotRateExhaustion
+--- PASS: TestHTTPOverloadIsNotRateExhaustion (0.00s)
+=== RUN   TestServeShutdown
+--- PASS: TestServeShutdown (0.00s)
+=== RUN   TestServeListenerFailureStopsCleanup
+--- PASS: TestServeListenerFailureStopsCleanup (0.00s)
+=== RUN   TestAppConfigValidation
+--- PASS: TestAppConfigValidation (0.00s)
+PASS
+coverage: 0.0% of statements in ./algorithm/tokenbucket/..., ./sdk, ./internal/proxyapp
+ok  	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/tests/internal/app	1.133s	coverage: 0.0% of statements in ./algorithm/tokenbucket/..., ./sdk, ./internal/proxyapp
+=== RUN   TestLeakyBucketProxyBothBackends
+=== RUN   TestLeakyBucketProxyBothBackends/ram
+2026/11/11 17:34:51 INFO request completed route=/ status=204 duration_ms=1
+2026/11/11 17:34:51 INFO request completed route=/ status=429 duration_ms=0
+2026/11/11 17:34:51 INFO request completed route=/ status=204 duration_ms=0
+=== RUN   TestLeakyBucketProxyBothBackends/redis
+2026/11/11 17:34:51 INFO request completed route=/ status=204 duration_ms=1
+2026/11/11 17:34:51 INFO request completed route=/ status=429 duration_ms=0
+2026/11/11 17:34:52 INFO request completed route=/ status=204 duration_ms=3
+2026/11/11 17:34:52 WARN rate limiter decision failed policy=ip error="leakybucket redis: redis: client is closed"
+2026/11/11 17:34:52 INFO request completed route=/ status=503 duration_ms=0
+--- PASS: TestLeakyBucketProxyBothBackends (1.13s)
+    --- PASS: TestLeakyBucketProxyBothBackends/ram (0.56s)
+    --- PASS: TestLeakyBucketProxyBothBackends/redis (0.58s)
+=== RUN   TestLeakyBucketProxyCapacityValidation
+--- PASS: TestLeakyBucketProxyCapacityValidation (0.01s)
+=== RUN   TestBodyLimitsBeforeChargingOrForwarding
+2026/11/11 17:34:52 INFO request completed route=/ status=413 duration_ms=0
+2026/11/11 17:34:52 INFO request completed route=/ status=413 duration_ms=0
+2026/11/11 17:34:52 INFO request completed route=/ status=204 duration_ms=0
+--- PASS: TestBodyLimitsBeforeChargingOrForwarding (0.00s)
+=== RUN   TestOverloadDoesNotQueueOrConsumeQuota
+2026/11/11 17:34:52 INFO request completed route=/ status=503 duration_ms=0
+2026/11/11 17:34:52 INFO request completed route=/ status=204 duration_ms=0
+2026/11/11 17:34:52 INFO request completed route=/ status=204 duration_ms=0
+--- PASS: TestOverloadDoesNotQueueOrConsumeQuota (0.00s)
+=== RUN   TestTenantCapacityIsolationAndProvisioning
+2026/11/11 17:34:52 INFO request completed route=/ status=204 duration_ms=0
+2026/11/11 17:34:52 INFO request completed route=/ status=503 duration_ms=0
+2026/11/11 17:34:52 INFO request completed route=/ status=204 duration_ms=0
+2026/11/11 17:34:52 WARN rate limiter decision failed policy=ip error="service: tenant is not provisioned"
+2026/11/11 17:34:52 INFO request completed route=/ status=403 duration_ms=0
+--- PASS: TestTenantCapacityIsolationAndProvisioning (0.00s)
+=== RUN   TestMetricsAuthorizationAndBoundedLabels
+2026/11/11 17:34:52 INFO request completed route=/ status=204 duration_ms=0
+2026/11/11 17:34:52 INFO request completed route=/ status=204 duration_ms=0
+2026/11/11 17:34:52 INFO request completed route=/ status=429 duration_ms=0
+--- PASS: TestMetricsAuthorizationAndBoundedLabels (0.01s)
+=== RUN   TestReverseProxyPreservesRequestAndStopsRejectedTraffic
+2026/11/11 17:34:52 INFO request completed route=/ status=201 duration_ms=0
+2026/11/11 17:34:52 INFO request completed route=/ status=201 duration_ms=0
+2026/11/11 17:34:52 INFO request completed route=/ status=429 duration_ms=0
+--- PASS: TestReverseProxyPreservesRequestAndStopsRejectedTraffic (0.00s)
+=== RUN   TestVerifiedIdentityForwarding
+2026/11/11 17:34:52 INFO request completed route=/ status=401 duration_ms=0
+2026/11/11 17:34:52 INFO request completed route=/ status=204 duration_ms=0
+--- PASS: TestVerifiedIdentityForwarding (0.00s)
+=== RUN   TestUpstreamFailureAndTimeout
+=== RUN   TestUpstreamFailureAndTimeout/false
+2026/11/11 17:34:52 WARN upstream request failed error_type=*net.OpError
+2026/11/11 17:34:52 INFO request completed route=/ status=502 duration_ms=0
+=== RUN   TestUpstreamFailureAndTimeout/true
+2026/11/11 17:34:52 WARN upstream request failed error_type=*http.timeoutError
+2026/11/11 17:34:52 INFO request completed route=/ status=504 duration_ms=31
+--- PASS: TestUpstreamFailureAndTimeout (0.04s)
+    --- PASS: TestUpstreamFailureAndTimeout/false (0.00s)
+    --- PASS: TestUpstreamFailureAndTimeout/true (0.03s)
+=== RUN   TestConfigValidation
+--- PASS: TestConfigValidation (0.01s)
+=== RUN   TestLoadStrictConfigAndEnvironment
+--- PASS: TestLoadStrictConfigAndEnvironment (0.01s)
+=== RUN   TestRedisReplicasShareQuotaAndFailClosed
+2026/11/11 17:34:52 INFO request completed route=/ status=204 duration_ms=2
+2026/11/11 17:34:52 INFO request completed route=/ status=204 duration_ms=1
+2026/11/11 17:34:52 INFO request completed route=/ status=429 duration_ms=0
+2026/11/11 17:34:52 WARN rate limiter decision failed policy=ip error="redis limiter: decision failed: redis: client is closed"
+2026/11/11 17:34:52 INFO request completed route=/ status=503 duration_ms=0
+--- PASS: TestRedisReplicasShareQuotaAndFailClosed (0.02s)
+=== RUN   TestRedisReadinessOOMAndRevisionMigration
+    redis_failure_test.go:20: set REDIS_SERVER_BIN to run isolated Redis failure tests
+--- SKIP: TestRedisReadinessOOMAndRevisionMigration (0.00s)
+=== RUN   TestSentinelPromotionPreservesReplicatedQuota
+    redis_failure_test.go:89: set REDIS_SERVER_BIN to run isolated Redis failure tests
+--- SKIP: TestSentinelPromotionPreservesReplicatedQuota (0.00s)
+=== RUN   TestClusterSharedQuota
+    redis_failure_test.go:159: set REDIS_SERVER_BIN to run isolated Redis failure tests
+--- SKIP: TestClusterSharedQuota (0.00s)
+=== RUN   TestSlidingCounterProxyBothBackends
+=== RUN   TestSlidingCounterProxyBothBackends/ram
+2026/11/11 17:34:52 INFO request completed route=/ status=204 duration_ms=0
+2026/11/11 17:34:52 INFO request completed route=/ status=429 duration_ms=0
+2026/11/11 17:34:53 INFO request completed route=/ status=204 duration_ms=1
+=== RUN   TestSlidingCounterProxyBothBackends/redis
+2026/11/11 17:34:53 INFO request completed route=/ status=204 duration_ms=3
+2026/11/11 17:34:53 INFO request completed route=/ status=429 duration_ms=1
+2026/11/11 17:34:54 INFO request completed route=/ status=204 duration_ms=55
+2026/11/11 17:34:54 WARN rate limiter decision failed policy=ip error="slidingcounter redis: redis: client is closed"
+2026/11/11 17:34:54 INFO request completed route=/ status=503 duration_ms=0
+--- PASS: TestSlidingCounterProxyBothBackends (2.33s)
+    --- PASS: TestSlidingCounterProxyBothBackends/ram (1.11s)
+    --- PASS: TestSlidingCounterProxyBothBackends/redis (1.23s)
+=== RUN   TestSlidingWindowProxyBothBackends
+=== RUN   TestSlidingWindowProxyBothBackends/ram
+2026/11/11 17:34:54 INFO request completed route=/ status=204 duration_ms=10
+2026/11/11 17:34:54 INFO request completed route=/ status=429 duration_ms=0
+2026/11/11 17:34:55 INFO request completed route=/ status=204 duration_ms=0
+=== RUN   TestSlidingWindowProxyBothBackends/redis
+2026/11/11 17:34:55 INFO request completed route=/ status=204 duration_ms=3
+2026/11/11 17:34:55 INFO request completed route=/ status=429 duration_ms=1
+2026/11/11 17:34:56 INFO request completed route=/ status=204 duration_ms=2
+2026/11/11 17:34:56 WARN rate limiter decision failed policy=ip error="slidingwindow redis: redis: client is closed"
+2026/11/11 17:34:56 INFO request completed route=/ status=503 duration_ms=0
+--- PASS: TestSlidingWindowProxyBothBackends (1.15s)
+    --- PASS: TestSlidingWindowProxyBothBackends/ram (0.56s)
+    --- PASS: TestSlidingWindowProxyBothBackends/redis (0.58s)
+=== RUN   TestRejectUnknownOrInconsistentAlgorithm
+--- PASS: TestRejectUnknownOrInconsistentAlgorithm (0.01s)
+=== RUN   TestTokenBucketServerBinary
+--- PASS: TestTokenBucketServerBinary (0.85s)
+=== RUN   TestTokenBucketTCPReplicasIsolationAndCapacity
+2026/11/11 17:34:56 INFO request completed route=/a status=401 duration_ms=0
+2026/11/11 17:34:56 INFO request completed route=/a status=204 duration_ms=6
+2026/11/11 17:34:56 INFO request completed route=/a status=204 duration_ms=5
+2026/11/11 17:34:56 INFO request completed route=/a status=204 duration_ms=5
+2026/11/11 17:34:56 INFO request completed route=/a status=429 duration_ms=1
+2026/11/11 17:34:56 INFO request completed route=/a status=429 duration_ms=2
+2026/11/11 17:34:56 INFO request completed route=/a status=429 duration_ms=2
+2026/11/11 17:34:56 INFO request completed route=/a status=429 duration_ms=1
+2026/11/11 17:34:56 INFO request completed route=/a status=429 duration_ms=2
+2026/11/11 17:34:56 INFO request completed route=/a status=429 duration_ms=4
+2026/11/11 17:34:56 INFO request completed route=/a status=429 duration_ms=6
+2026/11/11 17:34:56 INFO request completed route=/a status=429 duration_ms=15
+2026/11/11 17:34:56 INFO request completed route=/a status=204 duration_ms=15
+2026/11/11 17:34:56 INFO request completed route=/a status=429 duration_ms=6
+2026/11/11 17:34:56 INFO request completed route=/a status=429 duration_ms=1
+2026/11/11 17:34:56 INFO request completed route=/a status=429 duration_ms=2
+2026/11/11 17:34:56 INFO request completed route=/a status=429 duration_ms=3
+2026/11/11 17:34:56 INFO request completed route=/a status=429 duration_ms=0
+2026/11/11 17:34:56 INFO request completed route=/a status=429 duration_ms=1
+2026/11/11 17:34:56 INFO request completed route=/a status=429 duration_ms=1
+2026/11/11 17:34:56 INFO request completed route=/a status=429 duration_ms=2
+2026/11/11 17:34:56 INFO request completed route=/a status=429 duration_ms=3
+2026/11/11 17:34:56 INFO request completed route=/a status=429 duration_ms=2
+2026/11/11 17:34:56 INFO request completed route=/a status=204 duration_ms=19
+2026/11/11 17:34:56 INFO request completed route=/a status=429 duration_ms=20
+2026/11/11 17:34:56 INFO request completed route=/a status=429 duration_ms=2
+2026/11/11 17:34:56 INFO request completed route=/a status=429 duration_ms=9
+2026/11/11 17:34:56 INFO request completed route=/a status=429 duration_ms=19
+2026/11/11 17:34:56 INFO request completed route=/a status=429 duration_ms=7
+2026/11/11 17:34:56 INFO request completed route=/a status=429 duration_ms=8
+2026/11/11 17:34:56 INFO request completed route=/a status=429 duration_ms=4
+2026/11/11 17:34:56 INFO request completed route=/a status=429 duration_ms=11
+2026/11/11 17:34:56 INFO request completed route=/a status=429 duration_ms=11
+2026/11/11 17:34:56 INFO request completed route=/a status=429 duration_ms=6
+2026/11/11 17:34:56 INFO request completed route=/a status=429 duration_ms=1
+2026/11/11 17:34:56 INFO request completed route=/a status=429 duration_ms=0
+2026/11/11 17:34:56 INFO request completed route=/a status=429 duration_ms=4
+2026/11/11 17:34:56 INFO request completed route=/a status=429 duration_ms=17
+2026/11/11 17:34:56 INFO request completed route=/a status=429 duration_ms=5
+2026/11/11 17:34:56 INFO request completed route=/a status=429 duration_ms=23
+2026/11/11 17:34:56 INFO request completed route=/a status=429 duration_ms=7
+2026/11/11 17:34:56 INFO request completed route=/a status=429 duration_ms=2
+2026/11/11 17:34:56 INFO request completed route=/a status=429 duration_ms=9
+2026/11/11 17:34:56 INFO request completed route=/a status=429 duration_ms=1
+2026/11/11 17:34:56 INFO request completed route=/a status=429 duration_ms=7
+2026/11/11 17:34:56 INFO request completed route=/a status=429 duration_ms=1
+2026/11/11 17:34:56 INFO request completed route=/a status=429 duration_ms=1
+2026/11/11 17:34:56 INFO request completed route=/a status=429 duration_ms=9
+2026/11/11 17:34:56 INFO request completed route=/a status=429 duration_ms=1
+2026/11/11 17:34:56 INFO request completed route=/a status=429 duration_ms=1
+2026/11/11 17:34:56 INFO request completed route=/a status=429 duration_ms=1
+2026/11/11 17:34:56 INFO request completed route=/a status=429 duration_ms=1
+2026/11/11 17:34:56 INFO request completed route=/a status=429 duration_ms=1
+2026/11/11 17:34:56 INFO request completed route=/a status=429 duration_ms=2
+2026/11/11 17:34:56 INFO request completed route=/a status=429 duration_ms=1
+2026/11/11 17:34:56 INFO request completed route=/a status=429 duration_ms=3
+2026/11/11 17:34:56 INFO request completed route=/a status=429 duration_ms=20
+2026/11/11 17:34:56 INFO request completed route=/a status=429 duration_ms=3
+2026/11/11 17:34:56 INFO request completed route=/a status=429 duration_ms=27
+2026/11/11 17:34:56 INFO request completed route=/a status=429 duration_ms=2
+2026/11/11 17:34:56 INFO request completed route=/a status=429 duration_ms=4
+2026/11/11 17:34:56 INFO request completed route=/a status=204 duration_ms=23
+2026/11/11 17:34:56 INFO request completed route=/a status=429 duration_ms=11
+2026/11/11 17:34:57 INFO request completed route=/a status=429 duration_ms=29
+2026/11/11 17:34:57 INFO request completed route=/a status=429 duration_ms=13
+2026/11/11 17:34:57 INFO request completed route=/a status=429 duration_ms=29
+2026/11/11 17:34:57 INFO request completed route=/a status=429 duration_ms=17
+2026/11/11 17:34:57 INFO request completed route=/a status=429 duration_ms=18
+2026/11/11 17:34:57 INFO request completed route=/a status=429 duration_ms=18
+2026/11/11 17:34:57 INFO request completed route=/a status=429 duration_ms=18
+2026/11/11 17:34:57 INFO request completed route=/a status=429 duration_ms=18
+2026/11/11 17:34:57 INFO request completed route=/a status=204 duration_ms=31
+2026/11/11 17:34:57 INFO request completed route=/a status=429 duration_ms=6
+2026/11/11 17:34:57 INFO request completed route=/a status=429 duration_ms=7
+2026/11/11 17:34:57 INFO request completed route=/a status=429 duration_ms=7
+2026/11/11 17:34:57 INFO request completed route=/a status=429 duration_ms=7
+2026/11/11 17:34:57 INFO request completed route=/a status=429 duration_ms=7
+2026/11/11 17:34:57 INFO request completed route=/a status=429 duration_ms=5
+2026/11/11 17:34:57 INFO request completed route=/a status=429 duration_ms=5
+2026/11/11 17:34:57 INFO request completed route=/a status=429 duration_ms=6
+2026/11/11 17:34:57 INFO request completed route=/a status=429 duration_ms=6
+2026/11/11 17:34:57 INFO request completed route=/a status=429 duration_ms=6
+2026/11/11 17:34:57 INFO request completed route=/a status=429 duration_ms=6
+2026/11/11 17:34:57 INFO request completed route=/a status=429 duration_ms=6
+2026/11/11 17:34:57 INFO request completed route=/a status=429 duration_ms=21
+2026/11/11 17:34:57 INFO request completed route=/a status=429 duration_ms=5
+2026/11/11 17:34:57 INFO request completed route=/a status=429 duration_ms=30
+2026/11/11 17:34:57 INFO request completed route=/a status=429 duration_ms=21
+2026/11/11 17:34:57 INFO request completed route=/a status=429 duration_ms=5
+2026/11/11 17:34:57 INFO request completed route=/a status=429 duration_ms=5
+2026/11/11 17:34:57 INFO request completed route=/a status=429 duration_ms=4
+2026/11/11 17:34:57 INFO request completed route=/a status=429 duration_ms=6
+2026/11/11 17:34:57 INFO request completed route=/a status=429 duration_ms=5
+2026/11/11 17:34:57 INFO request completed route=/a status=429 duration_ms=6
+2026/11/11 17:34:57 INFO request completed route=/a status=429 duration_ms=35
+2026/11/11 17:34:57 INFO request completed route=/a status=429 duration_ms=31
+2026/11/11 17:34:57 INFO request completed route=/a status=429 duration_ms=20
+2026/11/11 17:34:57 INFO request completed route=/a status=429 duration_ms=20
+2026/11/11 17:34:57 INFO request completed route=/a status=429 duration_ms=29
+2026/11/11 17:34:57 INFO request completed route=/a status=429 duration_ms=20
+2026/11/11 17:34:57 INFO request completed route=/a status=429 duration_ms=21
+2026/11/11 17:34:57 INFO request completed route=/b status=204 duration_ms=0
+2026/11/11 17:34:57 INFO request completed route=/c status=503 duration_ms=0
+2026/11/11 17:34:57 INFO request completed route=/a status=204 duration_ms=0
+2026/11/11 17:34:57 INFO request completed route=/a status=429 duration_ms=0
+--- PASS: TestTokenBucketTCPReplicasIsolationAndCapacity (0.08s)
+=== RUN   TestTokenBucketServerRedisTimeoutAndRecovery
+2026/11/11 17:34:57 INFO request completed route=/ status=204 duration_ms=1
+2026/11/11 17:34:57 WARN rate limiter decision failed policy=ip error="tokenbucket redis: read tcp 127.0.0.1:63298->127.0.0.1:63297: i/o timeout"
+2026/11/11 17:34:57 INFO request completed route=/ status=503 duration_ms=100
+2026/11/11 17:34:57 INFO request completed route=/ status=429 duration_ms=1
+--- PASS: TestTokenBucketServerRedisTimeoutAndRecovery (0.22s)
+=== RUN   TestTokenBucketProxyBothBackends
+=== RUN   TestTokenBucketProxyBothBackends/ram
+2026/11/11 17:34:57 INFO request completed route=/ status=204 duration_ms=3
+2026/11/11 17:34:57 INFO request completed route=/ status=429 duration_ms=0
+2026/11/11 17:34:57 INFO request completed route=/ status=204 duration_ms=1
+=== RUN   TestTokenBucketProxyBothBackends/redis
+2026/11/11 17:34:57 INFO request completed route=/ status=204 duration_ms=1
+2026/11/11 17:34:57 INFO request completed route=/ status=429 duration_ms=0
+2026/11/11 17:34:58 INFO request completed route=/ status=204 duration_ms=4
+2026/11/11 17:34:58 WARN rate limiter decision failed policy=ip error="tokenbucket redis: redis: client is closed"
+2026/11/11 17:34:58 INFO request completed route=/ status=503 duration_ms=0
+--- PASS: TestTokenBucketProxyBothBackends (1.15s)
+    --- PASS: TestTokenBucketProxyBothBackends/ram (0.56s)
+    --- PASS: TestTokenBucketProxyBothBackends/redis (0.59s)
+=== RUN   TestTokenBucketProxyRejectsInvalidCapacity
+--- PASS: TestTokenBucketProxyRejectsInvalidCapacity (0.01s)
+PASS
+coverage: 61.5% of statements in ./algorithm/tokenbucket/..., ./sdk, ./internal/proxyapp
+ok  	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/tests/internal/proxyapp	8.637s	coverage: 61.5% of statements in ./algorithm/tokenbucket/..., ./sdk, ./internal/proxyapp
+?   	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/tests/leakybucket/latency	[no test files]
+=== RUN   TestCleanupLifecycle
+--- PASS: TestCleanupLifecycle (0.00s)
+=== RUN   TestCleanupValidation
+--- PASS: TestCleanupValidation (0.00s)
+PASS
+coverage: 0.0% of statements in ./algorithm/tokenbucket/..., ./sdk, ./internal/proxyapp
+ok  	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/tests/maintenance	1.120s	coverage: 0.0% of statements in ./algorithm/tokenbucket/..., ./sdk, ./internal/proxyapp
+=== RUN   TestClientIPTrustBoundary
+=== RUN   TestClientIPTrustBoundary/direct_spoof
+=== RUN   TestClientIPTrustBoundary/direct_malformed_ignored
+=== RUN   TestClientIPTrustBoundary/trusted_proxy
+=== RUN   TestClientIPTrustBoundary/trusted_chain
+=== RUN   TestClientIPTrustBoundary/forged_leftmost
+=== RUN   TestClientIPTrustBoundary/no_header
+=== RUN   TestClientIPTrustBoundary/IPv6
+=== RUN   TestClientIPTrustBoundary/mapped_IPv4
+=== RUN   TestClientIPTrustBoundary/invalid_trusted_chain
+=== RUN   TestClientIPTrustBoundary/invalid_peer
+--- PASS: TestClientIPTrustBoundary (0.00s)
+    --- PASS: TestClientIPTrustBoundary/direct_spoof (0.00s)
+    --- PASS: TestClientIPTrustBoundary/direct_malformed_ignored (0.00s)
+    --- PASS: TestClientIPTrustBoundary/trusted_proxy (0.00s)
+    --- PASS: TestClientIPTrustBoundary/trusted_chain (0.00s)
+    --- PASS: TestClientIPTrustBoundary/forged_leftmost (0.00s)
+    --- PASS: TestClientIPTrustBoundary/no_header (0.00s)
+    --- PASS: TestClientIPTrustBoundary/IPv6 (0.00s)
+    --- PASS: TestClientIPTrustBoundary/mapped_IPv4 (0.00s)
+    --- PASS: TestClientIPTrustBoundary/invalid_trusted_chain (0.00s)
+    --- PASS: TestClientIPTrustBoundary/invalid_peer (0.00s)
+=== RUN   TestRejectionResponses
+=== RUN   TestRejectionResponses/allowed
+=== RUN   TestRejectionResponses/rate_limited
+=== RUN   TestRejectionResponses/capacity
+=== RUN   TestRejectionResponses/invalid_backend_key
+=== RUN   TestRejectionResponses/backend_error
+=== RUN   TestRejectionResponses/unknown_policy
+=== RUN   TestRejectionResponses/invalid_service_identity
+--- PASS: TestRejectionResponses (0.00s)
+    --- PASS: TestRejectionResponses/allowed (0.00s)
+    --- PASS: TestRejectionResponses/rate_limited (0.00s)
+    --- PASS: TestRejectionResponses/capacity (0.00s)
+    --- PASS: TestRejectionResponses/invalid_backend_key (0.00s)
+    --- PASS: TestRejectionResponses/backend_error (0.00s)
+    --- PASS: TestRejectionResponses/unknown_policy (0.00s)
+    --- PASS: TestRejectionResponses/invalid_service_identity (0.00s)
+=== RUN   TestAuthenticationBoundary
+=== RUN   TestAuthenticationBoundary/missing_token
+=== RUN   TestAuthenticationBoundary/wrong_scheme
+=== RUN   TestAuthenticationBoundary/invalid_token
+=== RUN   TestAuthenticationBoundary/auth_unavailable
+=== RUN   TestAuthenticationBoundary/wrong_identity
+=== RUN   TestAuthenticationBoundary/verified_user
+--- PASS: TestAuthenticationBoundary (0.00s)
+    --- PASS: TestAuthenticationBoundary/missing_token (0.00s)
+    --- PASS: TestAuthenticationBoundary/wrong_scheme (0.00s)
+    --- PASS: TestAuthenticationBoundary/invalid_token (0.00s)
+    --- PASS: TestAuthenticationBoundary/auth_unavailable (0.00s)
+    --- PASS: TestAuthenticationBoundary/wrong_identity (0.00s)
+    --- PASS: TestAuthenticationBoundary/verified_user (0.00s)
+=== RUN   TestMiddlewareConfigValidation
+--- PASS: TestMiddlewareConfigValidation (0.00s)
+=== RUN   TestDuplicateAuthorizationRejected
+--- PASS: TestDuplicateAuthorizationRejected (0.00s)
+PASS
+coverage: 0.0% of statements in ./algorithm/tokenbucket/..., ./sdk, ./internal/proxyapp
+ok  	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/tests/middleware/http	1.161s	coverage: 0.0% of statements in ./algorithm/tokenbucket/..., ./sdk, ./internal/proxyapp
+=== RUN   TestValidate
+--- PASS: TestValidate (0.00s)
+PASS
+coverage: 0.0% of statements in ./algorithm/tokenbucket/..., ./sdk, ./internal/proxyapp
+ok  	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/tests/policy	1.110s	coverage: 0.0% of statements in ./algorithm/tokenbucket/..., ./sdk, ./internal/proxyapp
+=== RUN   TestLeakyBucketSDKBothBackends
+=== RUN   TestLeakyBucketSDKBothBackends/ram
+=== RUN   TestLeakyBucketSDKBothBackends/redis
+--- PASS: TestLeakyBucketSDKBothBackends (0.01s)
+    --- PASS: TestLeakyBucketSDKBothBackends/ram (0.00s)
+    --- PASS: TestLeakyBucketSDKBothBackends/redis (0.01s)
+=== RUN   TestLeakyBucketSDKCleanupAndValidation
+--- PASS: TestLeakyBucketSDKCleanupAndValidation (0.00s)
+=== RUN   TestMemoryConcurrencyCapacityAndRollover
+--- PASS: TestMemoryConcurrencyCapacityAndRollover (0.00s)
+=== RUN   TestValidationAndCancellationDoNotConsumeQuota
+--- PASS: TestValidationAndCancellationDoNotConsumeQuota (0.00s)
+=== RUN   TestConstructorsRejectInvalidConfiguration
+--- PASS: TestConstructorsRejectInvalidConfiguration (0.00s)
+=== RUN   TestHTTPMiddlewareIntegration
+--- PASS: TestHTTPMiddlewareIntegration (0.00s)
+=== RUN   TestRedisSharedQuotaReadinessAndCompatibility
+    sdk_test.go:157: set REDIS_SERVER_BIN to run isolated Redis failure tests
+--- SKIP: TestRedisSharedQuotaReadinessAndCompatibility (0.00s)
+=== RUN   TestSlidingCounterSDKBothBackends
+=== RUN   TestSlidingCounterSDKBothBackends/ram
+=== RUN   TestSlidingCounterSDKBothBackends/redis
+--- PASS: TestSlidingCounterSDKBothBackends (0.01s)
+    --- PASS: TestSlidingCounterSDKBothBackends/ram (0.00s)
+    --- PASS: TestSlidingCounterSDKBothBackends/redis (0.01s)
+=== RUN   TestSlidingCounterSDKCleanupAndValidation
+--- PASS: TestSlidingCounterSDKCleanupAndValidation (0.00s)
+=== RUN   TestSlidingWindowSDKBothBackends
+=== RUN   TestSlidingWindowSDKBothBackends/ram
+=== RUN   TestSlidingWindowSDKBothBackends/redis
+--- PASS: TestSlidingWindowSDKBothBackends (0.01s)
+    --- PASS: TestSlidingWindowSDKBothBackends/ram (0.00s)
+    --- PASS: TestSlidingWindowSDKBothBackends/redis (0.01s)
+=== RUN   TestSlidingWindowSDKCleanupAndValidation
+--- PASS: TestSlidingWindowSDKCleanupAndValidation (0.00s)
+=== RUN   TestTokenBucketSDKBothBackends
+=== RUN   TestTokenBucketSDKBothBackends/ram
+=== RUN   TestTokenBucketSDKBothBackends/redis
+--- PASS: TestTokenBucketSDKBothBackends (0.01s)
+    --- PASS: TestTokenBucketSDKBothBackends/ram (0.00s)
+    --- PASS: TestTokenBucketSDKBothBackends/redis (0.01s)
+=== RUN   TestTokenBucketSDKCleanupAndValidation
+--- PASS: TestTokenBucketSDKCleanupAndValidation (0.00s)
+PASS
+coverage: 35.5% of statements in ./algorithm/tokenbucket/..., ./sdk, ./internal/proxyapp
+ok  	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/tests/sdk	1.198s	coverage: 35.5% of statements in ./algorithm/tokenbucket/..., ./sdk, ./internal/proxyapp
+=== RUN   TestIdentityAndPolicyIsolation
+=== RUN   TestIdentityAndPolicyIsolation/first_user
+=== RUN   TestIdentityAndPolicyIsolation/same_user
+=== RUN   TestIdentityAndPolicyIsolation/another_user
+=== RUN   TestIdentityAndPolicyIsolation/another_tenant
+=== RUN   TestIdentityAndPolicyIsolation/another_policy
+=== RUN   TestIdentityAndPolicyIsolation/IP
+=== RUN   TestIdentityAndPolicyIsolation/equivalent_IP
+=== RUN   TestIdentityAndPolicyIsolation/credential
+=== RUN   TestIdentityAndPolicyIsolation/same_credential
+=== RUN   TestIdentityAndPolicyIsolation/route_one
+=== RUN   TestIdentityAndPolicyIsolation/route_two
+=== RUN   TestIdentityAndPolicyIsolation/same_route
+=== RUN   TestIdentityAndPolicyIsolation/route_ignored_by_global_policy
+--- PASS: TestIdentityAndPolicyIsolation (0.00s)
+    --- PASS: TestIdentityAndPolicyIsolation/first_user (0.00s)
+    --- PASS: TestIdentityAndPolicyIsolation/same_user (0.00s)
+    --- PASS: TestIdentityAndPolicyIsolation/another_user (0.00s)
+    --- PASS: TestIdentityAndPolicyIsolation/another_tenant (0.00s)
+    --- PASS: TestIdentityAndPolicyIsolation/another_policy (0.00s)
+    --- PASS: TestIdentityAndPolicyIsolation/IP (0.00s)
+    --- PASS: TestIdentityAndPolicyIsolation/equivalent_IP (0.00s)
+    --- PASS: TestIdentityAndPolicyIsolation/credential (0.00s)
+    --- PASS: TestIdentityAndPolicyIsolation/same_credential (0.00s)
+    --- PASS: TestIdentityAndPolicyIsolation/route_one (0.00s)
+    --- PASS: TestIdentityAndPolicyIsolation/route_two (0.00s)
+    --- PASS: TestIdentityAndPolicyIsolation/same_route (0.00s)
+    --- PASS: TestIdentityAndPolicyIsolation/route_ignored_by_global_policy (0.00s)
+=== RUN   TestCheckErrors
+--- PASS: TestCheckErrors (0.00s)
+=== RUN   TestNewRejectsInvalidBindings
+--- PASS: TestNewRejectsInvalidBindings (0.00s)
+=== RUN   TestEvaluateCanceledDoesNotConsumeAllowance
+--- PASS: TestEvaluateCanceledDoesNotConsumeAllowance (0.00s)
+=== RUN   TestCheckConcurrent
+--- PASS: TestCheckConcurrent (0.00s)
+=== RUN   TestCheckPreservesCapacityRejection
+--- PASS: TestCheckPreservesCapacityRejection (0.00s)
+PASS
+coverage: 0.0% of statements in ./algorithm/tokenbucket/..., ./sdk, ./internal/proxyapp
+ok  	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/tests/service	1.117s	coverage: 0.0% of statements in ./algorithm/tokenbucket/..., ./sdk, ./internal/proxyapp
+?   	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/tests/testredis	[no test files]

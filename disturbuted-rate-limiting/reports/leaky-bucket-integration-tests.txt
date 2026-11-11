@@ -1,0 +1,217 @@
+./tests/leakybucket/run.sh
+=== RUN   TestDrainRetryAndClockRollback
+--- PASS: TestDrainRetryAndClockRollback (0.00s)
+=== RUN   TestCapacityValidationAndCancellation
+--- PASS: TestCapacityValidationAndCancellation (0.00s)
+=== RUN   TestConcurrentAdmission
+--- PASS: TestConcurrentAdmission (0.00s)
+=== RUN   TestFractionalRateRetry
+--- PASS: TestFractionalRateRetry (0.00s)
+=== RUN   TestRandomizedIntegerReference
+=== RUN   TestRandomizedIntegerReference/3-1s
+=== RUN   TestRandomizedIntegerReference/7-13ms
+=== RUN   TestRandomizedIntegerReference/10-1ns
+=== RUN   TestRandomizedIntegerReference/1-37ns
+--- PASS: TestRandomizedIntegerReference (0.09s)
+    --- PASS: TestRandomizedIntegerReference/3-1s (0.03s)
+    --- PASS: TestRandomizedIntegerReference/7-13ms (0.02s)
+    --- PASS: TestRandomizedIntegerReference/10-1ns (0.02s)
+    --- PASS: TestRandomizedIntegerReference/1-37ns (0.02s)
+=== RUN   TestConcurrentCleanupAndUsage
+--- PASS: TestConcurrentCleanupAndUsage (0.11s)
+PASS
+ok  	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/tests/algorithm/leakybucket	1.294s
+=== RUN   TestRAMRedisDrainParity
+--- PASS: TestRAMRedisDrainParity (0.04s)
+=== RUN   TestReplicasConcurrencyCapacityAndCompatibility
+--- PASS: TestReplicasConcurrencyCapacityAndCompatibility (0.04s)
+=== RUN   TestExpiryInvalidKeysAndReadiness
+--- PASS: TestExpiryInvalidKeysAndReadiness (0.11s)
+=== RUN   TestConstructorValidation
+--- PASS: TestConstructorValidation (0.00s)
+=== RUN   TestRandomizedRAMRedisParity
+=== RUN   TestRandomizedRAMRedisParity/3-1s
+=== RUN   TestRandomizedRAMRedisParity/7-13ms
+=== RUN   TestRandomizedRAMRedisParity/100-1ms
+--- PASS: TestRandomizedRAMRedisParity (2.36s)
+    --- PASS: TestRandomizedRAMRedisParity/3-1s (0.72s)
+    --- PASS: TestRandomizedRAMRedisParity/7-13ms (0.86s)
+    --- PASS: TestRandomizedRAMRedisParity/100-1ms (0.78s)
+=== RUN   TestPartialDrainExpiryAndPolicyScope
+--- PASS: TestPartialDrainExpiryAndPolicyScope (0.01s)
+=== RUN   TestBackendDeadlineFailsClosed
+--- PASS: TestBackendDeadlineFailsClosed (0.04s)
+=== RUN   TestLostReplyDoesNotReplayAdmission
+--- PASS: TestLostReplyDoesNotReplayAdmission (0.01s)
+PASS
+ok  	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/tests/algorithm/leakybucket/redis	4.021s
+=== RUN   TestLeakyBucketSDKBothBackends
+=== RUN   TestLeakyBucketSDKBothBackends/ram
+=== RUN   TestLeakyBucketSDKBothBackends/redis
+--- PASS: TestLeakyBucketSDKBothBackends (0.02s)
+    --- PASS: TestLeakyBucketSDKBothBackends/ram (0.00s)
+    --- PASS: TestLeakyBucketSDKBothBackends/redis (0.02s)
+=== RUN   TestLeakyBucketSDKCleanupAndValidation
+--- PASS: TestLeakyBucketSDKCleanupAndValidation (0.00s)
+=== RUN   TestMemoryConcurrencyCapacityAndRollover
+--- PASS: TestMemoryConcurrencyCapacityAndRollover (0.00s)
+=== RUN   TestValidationAndCancellationDoNotConsumeQuota
+--- PASS: TestValidationAndCancellationDoNotConsumeQuota (0.00s)
+=== RUN   TestConstructorsRejectInvalidConfiguration
+--- PASS: TestConstructorsRejectInvalidConfiguration (0.00s)
+=== RUN   TestHTTPMiddlewareIntegration
+--- PASS: TestHTTPMiddlewareIntegration (0.00s)
+=== RUN   TestRedisSharedQuotaReadinessAndCompatibility
+    sdk_test.go:157: set REDIS_SERVER_BIN to run isolated Redis failure tests
+--- SKIP: TestRedisSharedQuotaReadinessAndCompatibility (0.00s)
+=== RUN   TestSlidingCounterSDKBothBackends
+=== RUN   TestSlidingCounterSDKBothBackends/ram
+=== RUN   TestSlidingCounterSDKBothBackends/redis
+--- PASS: TestSlidingCounterSDKBothBackends (0.01s)
+    --- PASS: TestSlidingCounterSDKBothBackends/ram (0.00s)
+    --- PASS: TestSlidingCounterSDKBothBackends/redis (0.01s)
+=== RUN   TestSlidingCounterSDKCleanupAndValidation
+--- PASS: TestSlidingCounterSDKCleanupAndValidation (0.00s)
+=== RUN   TestSlidingWindowSDKBothBackends
+=== RUN   TestSlidingWindowSDKBothBackends/ram
+=== RUN   TestSlidingWindowSDKBothBackends/redis
+--- PASS: TestSlidingWindowSDKBothBackends (0.01s)
+    --- PASS: TestSlidingWindowSDKBothBackends/ram (0.00s)
+    --- PASS: TestSlidingWindowSDKBothBackends/redis (0.01s)
+=== RUN   TestSlidingWindowSDKCleanupAndValidation
+--- PASS: TestSlidingWindowSDKCleanupAndValidation (0.00s)
+=== RUN   TestTokenBucketSDKBothBackends
+=== RUN   TestTokenBucketSDKBothBackends/ram
+=== RUN   TestTokenBucketSDKBothBackends/redis
+--- PASS: TestTokenBucketSDKBothBackends (0.01s)
+    --- PASS: TestTokenBucketSDKBothBackends/ram (0.00s)
+    --- PASS: TestTokenBucketSDKBothBackends/redis (0.01s)
+=== RUN   TestTokenBucketSDKCleanupAndValidation
+--- PASS: TestTokenBucketSDKCleanupAndValidation (0.00s)
+PASS
+ok  	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/tests/sdk	1.171s
+=== RUN   TestLeakyBucketProxyBothBackends
+=== RUN   TestLeakyBucketProxyBothBackends/ram
+2026/11/11 17:26:20 INFO request completed route=/ status=204 duration_ms=1
+2026/11/11 17:26:20 INFO request completed route=/ status=429 duration_ms=0
+2026/11/11 17:26:20 INFO request completed route=/ status=204 duration_ms=0
+=== RUN   TestLeakyBucketProxyBothBackends/redis
+2026/11/11 17:26:20 INFO request completed route=/ status=204 duration_ms=1
+2026/11/11 17:26:20 INFO request completed route=/ status=429 duration_ms=0
+2026/11/11 17:26:21 INFO request completed route=/ status=204 duration_ms=2
+2026/11/11 17:26:21 WARN rate limiter decision failed policy=ip error="leakybucket redis: redis: client is closed"
+2026/11/11 17:26:21 INFO request completed route=/ status=503 duration_ms=0
+--- PASS: TestLeakyBucketProxyBothBackends (1.12s)
+    --- PASS: TestLeakyBucketProxyBothBackends/ram (0.56s)
+    --- PASS: TestLeakyBucketProxyBothBackends/redis (0.57s)
+=== RUN   TestLeakyBucketProxyCapacityValidation
+--- PASS: TestLeakyBucketProxyCapacityValidation (0.00s)
+=== RUN   TestBodyLimitsBeforeChargingOrForwarding
+2026/11/11 17:26:21 INFO request completed route=/ status=413 duration_ms=0
+2026/11/11 17:26:21 INFO request completed route=/ status=413 duration_ms=0
+2026/11/11 17:26:21 INFO request completed route=/ status=204 duration_ms=0
+--- PASS: TestBodyLimitsBeforeChargingOrForwarding (0.00s)
+=== RUN   TestOverloadDoesNotQueueOrConsumeQuota
+2026/11/11 17:26:21 INFO request completed route=/ status=503 duration_ms=0
+2026/11/11 17:26:21 INFO request completed route=/ status=204 duration_ms=0
+2026/11/11 17:26:21 INFO request completed route=/ status=204 duration_ms=0
+--- PASS: TestOverloadDoesNotQueueOrConsumeQuota (0.00s)
+=== RUN   TestTenantCapacityIsolationAndProvisioning
+2026/11/11 17:26:21 INFO request completed route=/ status=204 duration_ms=0
+2026/11/11 17:26:21 INFO request completed route=/ status=503 duration_ms=0
+2026/11/11 17:26:21 INFO request completed route=/ status=204 duration_ms=0
+2026/11/11 17:26:21 WARN rate limiter decision failed policy=ip error="service: tenant is not provisioned"
+2026/11/11 17:26:21 INFO request completed route=/ status=403 duration_ms=0
+--- PASS: TestTenantCapacityIsolationAndProvisioning (0.00s)
+=== RUN   TestMetricsAuthorizationAndBoundedLabels
+2026/11/11 17:26:21 INFO request completed route=/ status=204 duration_ms=0
+2026/11/11 17:26:21 INFO request completed route=/ status=204 duration_ms=0
+2026/11/11 17:26:21 INFO request completed route=/ status=429 duration_ms=0
+--- PASS: TestMetricsAuthorizationAndBoundedLabels (0.00s)
+=== RUN   TestReverseProxyPreservesRequestAndStopsRejectedTraffic
+2026/11/11 17:26:21 INFO request completed route=/ status=201 duration_ms=0
+2026/11/11 17:26:21 INFO request completed route=/ status=201 duration_ms=0
+2026/11/11 17:26:21 INFO request completed route=/ status=429 duration_ms=0
+--- PASS: TestReverseProxyPreservesRequestAndStopsRejectedTraffic (0.00s)
+=== RUN   TestVerifiedIdentityForwarding
+2026/11/11 17:26:21 INFO request completed route=/ status=401 duration_ms=0
+2026/11/11 17:26:21 INFO request completed route=/ status=204 duration_ms=0
+--- PASS: TestVerifiedIdentityForwarding (0.00s)
+=== RUN   TestUpstreamFailureAndTimeout
+=== RUN   TestUpstreamFailureAndTimeout/false
+2026/11/11 17:26:21 WARN upstream request failed error_type=*net.OpError
+2026/11/11 17:26:21 INFO request completed route=/ status=502 duration_ms=0
+=== RUN   TestUpstreamFailureAndTimeout/true
+2026/11/11 17:26:21 WARN upstream request failed error_type=context.deadlineExceededError
+2026/11/11 17:26:21 INFO request completed route=/ status=504 duration_ms=30
+--- PASS: TestUpstreamFailureAndTimeout (0.03s)
+    --- PASS: TestUpstreamFailureAndTimeout/false (0.00s)
+    --- PASS: TestUpstreamFailureAndTimeout/true (0.03s)
+=== RUN   TestConfigValidation
+--- PASS: TestConfigValidation (0.01s)
+=== RUN   TestLoadStrictConfigAndEnvironment
+--- PASS: TestLoadStrictConfigAndEnvironment (0.00s)
+=== RUN   TestRedisReplicasShareQuotaAndFailClosed
+2026/11/11 17:26:21 INFO request completed route=/ status=204 duration_ms=2
+2026/11/11 17:26:21 INFO request completed route=/ status=204 duration_ms=1
+2026/11/11 17:26:21 INFO request completed route=/ status=429 duration_ms=0
+2026/11/11 17:26:21 WARN rate limiter decision failed policy=ip error="redis limiter: decision failed: redis: client is closed"
+2026/11/11 17:26:21 INFO request completed route=/ status=503 duration_ms=0
+--- PASS: TestRedisReplicasShareQuotaAndFailClosed (0.02s)
+=== RUN   TestRedisReadinessOOMAndRevisionMigration
+    redis_failure_test.go:20: set REDIS_SERVER_BIN to run isolated Redis failure tests
+--- SKIP: TestRedisReadinessOOMAndRevisionMigration (0.00s)
+=== RUN   TestSentinelPromotionPreservesReplicatedQuota
+    redis_failure_test.go:89: set REDIS_SERVER_BIN to run isolated Redis failure tests
+--- SKIP: TestSentinelPromotionPreservesReplicatedQuota (0.00s)
+=== RUN   TestClusterSharedQuota
+    redis_failure_test.go:159: set REDIS_SERVER_BIN to run isolated Redis failure tests
+--- SKIP: TestClusterSharedQuota (0.00s)
+=== RUN   TestSlidingCounterProxyBothBackends
+=== RUN   TestSlidingCounterProxyBothBackends/ram
+2026/11/11 17:26:21 INFO request completed route=/ status=204 duration_ms=0
+2026/11/11 17:26:21 INFO request completed route=/ status=429 duration_ms=0
+2026/11/11 17:26:22 INFO request completed route=/ status=204 duration_ms=0
+=== RUN   TestSlidingCounterProxyBothBackends/redis
+2026/11/11 17:26:22 INFO request completed route=/ status=204 duration_ms=1
+2026/11/11 17:26:22 INFO request completed route=/ status=429 duration_ms=0
+2026/11/11 17:26:23 INFO request completed route=/ status=204 duration_ms=9
+2026/11/11 17:26:23 WARN rate limiter decision failed policy=ip error="slidingcounter redis: redis: client is closed"
+2026/11/11 17:26:23 INFO request completed route=/ status=503 duration_ms=0
+--- PASS: TestSlidingCounterProxyBothBackends (2.24s)
+    --- PASS: TestSlidingCounterProxyBothBackends/ram (1.10s)
+    --- PASS: TestSlidingCounterProxyBothBackends/redis (1.13s)
+=== RUN   TestSlidingWindowProxyBothBackends
+=== RUN   TestSlidingWindowProxyBothBackends/ram
+2026/11/11 17:26:23 INFO request completed route=/ status=204 duration_ms=0
+2026/11/11 17:26:23 INFO request completed route=/ status=429 duration_ms=0
+2026/11/11 17:26:24 INFO request completed route=/ status=204 duration_ms=6
+=== RUN   TestSlidingWindowProxyBothBackends/redis
+2026/11/11 17:26:24 INFO request completed route=/ status=204 duration_ms=2
+2026/11/11 17:26:24 INFO request completed route=/ status=429 duration_ms=0
+2026/11/11 17:26:24 INFO request completed route=/ status=204 duration_ms=8
+2026/11/11 17:26:24 WARN rate limiter decision failed policy=ip error="slidingwindow redis: redis: client is closed"
+2026/11/11 17:26:24 INFO request completed route=/ status=503 duration_ms=0
+--- PASS: TestSlidingWindowProxyBothBackends (1.18s)
+    --- PASS: TestSlidingWindowProxyBothBackends/ram (0.56s)
+    --- PASS: TestSlidingWindowProxyBothBackends/redis (0.62s)
+=== RUN   TestRejectUnknownOrInconsistentAlgorithm
+--- PASS: TestRejectUnknownOrInconsistentAlgorithm (0.00s)
+=== RUN   TestTokenBucketProxyBothBackends
+=== RUN   TestTokenBucketProxyBothBackends/ram
+2026/11/11 17:26:24 INFO request completed route=/ status=204 duration_ms=0
+2026/11/11 17:26:24 INFO request completed route=/ status=429 duration_ms=0
+2026/11/11 17:26:25 INFO request completed route=/ status=204 duration_ms=0
+=== RUN   TestTokenBucketProxyBothBackends/redis
+2026/11/11 17:26:25 INFO request completed route=/ status=204 duration_ms=2
+2026/11/11 17:26:25 INFO request completed route=/ status=429 duration_ms=1
+2026/11/11 17:26:25 INFO request completed route=/ status=204 duration_ms=4
+2026/11/11 17:26:25 WARN rate limiter decision failed policy=ip error="tokenbucket redis: redis: client is closed"
+2026/11/11 17:26:25 INFO request completed route=/ status=503 duration_ms=0
+--- PASS: TestTokenBucketProxyBothBackends (1.13s)
+    --- PASS: TestTokenBucketProxyBothBackends/ram (0.56s)
+    --- PASS: TestTokenBucketProxyBothBackends/redis (0.58s)
+=== RUN   TestTokenBucketProxyRejectsInvalidCapacity
+--- PASS: TestTokenBucketProxyRejectsInvalidCapacity (0.01s)
+PASS
+ok  	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/tests/internal/proxyapp	7.202s

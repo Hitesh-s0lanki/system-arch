@@ -1,8 +1,14 @@
 # Distributed rate limiter
 
-A Go fixed-window rate limiter with embedded-library and reverse-proxy integrations.
-The current algorithm is fixed window, with RAM or Redis storage. It can run as
+A Go rate limiter with embedded-library and reverse-proxy integrations.
+Fixed-window counters, sliding-window logs, sliding-window counters, and token buckets support RAM or Redis
+storage. It can run as
 an embedded Go library, a demonstration server, or a configurable reverse proxy.
+
+See [rate-limiting algorithms](docs/algorithms.md) for a comparison of alternative
+algorithms, sliding-window timestamp storage, and token-bucket SDK/proxy configuration. See the
+[sliding-window guide](docs/sliding-window.md) and
+[counter guide](docs/sliding-window-counter.md) for configuration and tests.
 
 For embedding in an application, use the [Go SDK](docs/sdk.md):
 `sdk.NewMemory` or `sdk.NewRedis` constructs the policy registry and independent
@@ -48,6 +54,12 @@ Trusted application code resolves identity and chooses a policy
 | `sdk` | Embedded RAM/Redis constructors, policy checks, readiness, and cleanup |
 | `algorithm/fixedwindow` | Counters, windows, capacity, cleanup, concurrency |
 | `algorithm/fixedwindow/redis` | Atomic Redis decisions, capacity, and expiry |
+| `algorithm/slidingcounter` | Weighted two-window counters with bounded RAM storage |
+| `algorithm/slidingcounter/redis` | Shared atomic counters and identity expiry |
+| `algorithm/slidingwindow` | Rolling timestamp logs with bounded RAM storage |
+| `algorithm/slidingwindow/redis` | Shared atomic rolling logs and identity expiry |
+| `algorithm/leakybucket` | Continuously draining buckets with bounded RAM storage |
+| `algorithm/leakybucket/redis` | Shared atomic bucket admission and idle expiry |
 | `identity` | Bounded identity inputs, canonical IP addresses, namespaced keys |
 | `policy` | Identity choice and optional separation by canonical route |
 | `service` | Immutable policy registry and context-aware backend dispatch |
@@ -223,6 +235,19 @@ make benchmark
 
 One fixed-window policy is evaluated per route. Boundary bursts and charging
 admitted attempts remain explicit contracts. Multi-policy atomic transactions,
-remote decision APIs, other algorithms, and non-Go SDKs are outside this release.
+remote decision APIs, additional algorithms, and non-Go SDKs are outside this release.
 Real capacity and failover durability must be accepted against your deployment's
 requirements; Redis HA does not guarantee zero counter loss.
+
+Leaky bucket meters support RAM and Redis through the SDK and proxy routes using
+`"algorithm": "leaky_bucket"` with a required `capacity`. See the
+[leaky bucket guide](docs/leaky-bucket.md) for configuration and behavior.
+
+## Continuous integration and Docker publishing
+
+Changes under this module trigger [GitHub Actions](../.github/workflows/rate-limiter.yml)
+for Go tests, Redis integration, builds, container checks, and load testing.
+Successful default-branch runs publish the tested image to both GHCR and Docker
+Hub with `latest` and commit tags. See [registry setup and deployment](docs/docker.md#github-actions-and-published-images)
+for the required Docker Hub secret/variables and commands to run a published image.
+Use `make test-docker` to run the container checks locally.

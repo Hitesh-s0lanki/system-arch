@@ -4,15 +4,23 @@ import { useEffect, useState } from 'react'
 
 type DocsIndexProps = {
   sections: readonly (readonly [id: string, label: string])[]
+  onNavigate?: (id: string) => void
+  contextKey?: string
+  activeSection?: string
 }
 
-export function DocsIndex({ sections }: DocsIndexProps) {
+export function DocsIndex({
+  sections,
+  onNavigate,
+  contextKey,
+  activeSection,
+}: DocsIndexProps) {
   const [activeId, setActiveId] = useState<string | undefined>(sections[0]?.[0])
 
   useEffect(() => {
     const targets = sections.flatMap(([id]) => {
       const element = document.getElementById(id)
-      return element ? [{ id, element }] : []
+      return element && element.getClientRects().length ? [{ id, element }] : []
     })
     let scrollRoot = targets[0]?.element.parentElement
     while (
@@ -64,7 +72,9 @@ export function DocsIndex({ sections }: DocsIndexProps) {
       window.removeEventListener('resize', scheduleUpdate)
       window.removeEventListener('hashchange', scheduleUpdate)
     }
-  }, [sections])
+  }, [sections, contextKey])
+
+  const currentId = activeSection ?? activeId
 
   return (
     <aside className="fixed top-24 right-6 bottom-8 hidden w-44 overflow-y-auto lg:block">
@@ -75,9 +85,15 @@ export function DocsIndex({ sections }: DocsIndexProps) {
             <a
               key={id}
               href={`#${id}`}
-              aria-current={activeId === id ? 'location' : undefined}
-              onClick={() => setActiveId(id)}
-              className={`-ml-px block border-l-2 py-2 pr-2 pl-4 leading-5 transition-colors focus-visible:outline-2 focus-visible:outline-ring ${activeId === id ? 'border-primary bg-primary/5 font-medium text-primary' : 'border-transparent text-muted-foreground hover:text-foreground'}`}
+              aria-current={currentId === id ? 'location' : undefined}
+              onClick={(event) => {
+                setActiveId(id)
+                if (onNavigate) {
+                  event.preventDefault()
+                  onNavigate(id)
+                }
+              }}
+              className={`-ml-px block border-l-2 py-2 pr-2 pl-4 leading-5 transition-colors focus-visible:outline-2 focus-visible:outline-ring ${currentId === id ? 'border-primary bg-primary/5 font-medium text-primary' : 'border-transparent text-muted-foreground hover:text-foreground'}`}
             >
               {label}
             </a>

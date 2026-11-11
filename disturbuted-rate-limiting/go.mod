@@ -1,6 +1,6 @@
 module github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting
 
-go 1.26.10
+go 1.26.11
 
 require (
 	github.com/coreos/go-oidc/v3 v3.21.0

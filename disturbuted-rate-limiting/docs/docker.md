@@ -2,6 +2,48 @@
 
 Run these commands from `disturbuted-rate-limiting/`.
 
+## Local browser demo
+
+Start Docker Desktop, run `npm run dev` from `frontend/`, and open
+`http://localhost:3000/system-design/rate-limiter/fixed-window`.
+Choose an algorithm, storage, identity, and end server, then click **Start Docker**.
+Use **Send request** repeatedly to see real backend responses and HTTP 429.
+Change settings and use **Apply & restart Docker** to apply them. **Stop** removes
+the demo containers.
+
+The browser demo uses a separate Compose project, `rate-limiter-ui`, on loopback
+port 8089. It writes `.local-demo/proxy.json`, leaving `configs/proxy.json` intact.
+Each start uses a fresh policy revision, so Redis trials start with fresh quotas.
+User and API-key tests use two local bearer credentials; changing the selected
+client changes its verified identity. IP tests share the local connection IP.
+Headers and a request body can be supplied in the request editor.
+
+Docker controls and request testing are disabled on Vercel and non-local hosts.
+Configuration export remains available. Override `RATE_LIMITER_DEMO_PORT` or
+`RATE_LIMITER_PROJECT_DIR` in the frontend environment if needed.
+
+To stop the browser demo from the terminal:
+
+```sh
+docker compose --project-name rate-limiter-ui -f compose.yaml -f compose.redis.yaml down --remove-orphans
+```
+
+## Select an algorithm when launching the image
+
+Set `routes[].algorithm` in the mounted JSON to `fixed_window`,
+`sliding_window_log`, `sliding_window_counter`, `token_bucket`, or `leaky_bucket`.
+Bucket algorithms also accept `capacity`; all algorithms use `limit`, `window`,
+and `max_keys`. See [algorithm behavior](algorithms.md).
+
+To launch with an exported configuration:
+
+```sh
+RATE_LIMIT_CONFIG=./configs/my-proxy.json docker compose up -d --build --force-recreate --wait
+```
+
+Compose's `RATE_LIMIT_UPSTREAM` overrides the JSON upstream. Set it as well when
+using your own website or server. Use the Redis override below for Redis storage.
+
 ## Start with RAM
 
 ```sh
@@ -209,3 +251,60 @@ upstream errors, and timeouts.
 Implementation references: [Go reverse proxy](https://pkg.go.dev/net/http/httputil),
 [Redis atomic scripting](https://redis.io/docs/latest/develop/programmability/eval-intro/),
 and [Compose dependency health checks](https://docs.docker.com/compose/how-tos/startup-order/).
+
+## GitHub Actions and published images
+
+[Rate limiter workflow](../../.github/workflows/rate-limiter.yml) runs on every
+push or pull request that changes this module or the workflow itself. It also
+supports a manual run from the Actions tab. Other branches and pull requests run
+verification; publishing runs only on the repository's default branch after
+both verification jobs pass.
+
+The Go job checks formatting, module checksums, builds every package, runs the
+race-enabled suite against real Redis (including isolated failure tests and the
+compiled server test), runs vet, and scans dependencies with govulncheck.
+The Docker job builds the runtime image, exercises all five algorithms with RAM
+and Redis, checks shared replica quotas, restart behavior and Redis outages,
+and runs the sustained two-replica k6 load test. Temporary stacks and volumes
+are removed after each run. Run the container checks locally with `make test-docker`.
+Python 3 and a working Docker Compose v2 installation are required.
+
+Before the first publish, configure the repository under **Settings → Secrets
+and variables → Actions**:
+
+| Type | Name | Value |
+| --- | --- | --- |
+| Variable | `DOCKERHUB_USERNAME` | Docker Hub login that owns or can write to the image repository |
+| Secret | `DOCKERHUB_TOKEN` | Docker Hub access token with write permission |
+| Variable (optional) | `DOCKERHUB_IMAGE` | Full image name, e.g. `your-org/distributed-rate-limiter`; defaults to `DOCKERHUB_USERNAME/distributed-rate-limiter` |
+
+GHCR uses the built-in `GITHUB_TOKEN` with job-scoped `packages: write` permission.
+If an existing GHCR package has separate permissions, grant this repository
+Actions access to that package. Docker Hub configuration is required because
+both registries are published. Registry pushes are sequential; if a registry
+fails, the job fails and an earlier push may already exist. Rerun the workflow
+to retry publication.
+
+The publish job downloads and pushes the exact image that passed container
+verification, without rebuilding it. Images currently target `linux/amd64` on
+GitHub's Ubuntu runner. Both registries receive `latest` and `sha-<full commit SHA>`:
+
+- `ghcr.io/hitesh-s0lanki/system-arch/distributed-rate-limiter`
+- `<DOCKERHUB_IMAGE>` or `<DOCKERHUB_USERNAME>/distributed-rate-limiter`
+
+Use the commit tag to select a release or roll back. To run a published image
+with the existing Compose configuration, from this module directory:
+
+```sh
+export RATE_LIMIT_IMAGE=ghcr.io/hitesh-s0lanki/system-arch/distributed-rate-limiter:sha-<full-commit-sha>
+docker compose -f compose.yaml -f compose.redis.yaml pull
+docker compose -f compose.yaml -f compose.redis.yaml up -d --no-build --wait
+```
+
+For a private GHCR package, run `docker login ghcr.io` with an account/token that
+can read the package before pulling. The pipeline publishes images to registries;
+run the Compose commands on your Docker host to roll out a selected image.
+The workflow does not connect to a production host.
+
+The registry permission and authentication approach follows
+[GitHub's image publishing documentation](https://docs.github.com/en/actions/tutorials/publish-packages/publish-docker-images).

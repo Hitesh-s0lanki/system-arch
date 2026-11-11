@@ -11,11 +11,12 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test:e2e:load-tester": "playwright test tests/e2e/startup.spec.ts tests/e2e/load-tester.spec.ts tests/e2e/workload.spec.ts",
-    "test:e2e:rate-limiter": "playwright test tests/e2e/rate-limiter.spec.ts"
+    "test:e2e:rate-limiter": "playwright test tests/e2e/rate-limiter.spec.ts tests/e2e/algorithm-latency.spec.ts tests/e2e/algorithm-guide.spec.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",
     "@shadcn/react": "^0.3.1",
+    "@xyflow/react": "^12.12.1",
     "class-variance-authority": "^0.7.1",
     "cmdk": "^1.1.1",
     "cn": "^0.5.2",

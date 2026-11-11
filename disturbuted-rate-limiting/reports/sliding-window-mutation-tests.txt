@@ -1,0 +1,34 @@
+RAM: include expired boundary timestamp: DETECTED
+--- FAIL: TestRollingWindowAndRollback (0.00s)
+    slidingwindow_test.go:43: at 11s: got {Allowed:false Remaining:0 RetryAfter:0s Reason:rate_limited} want {Allowed:true Remaining:0 RetryAfter:0s Reason:}
+FAIL
+FAIL	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/tests/algorithm/slidingwindow	0.565s
+FAIL
+
+RAM: allow one extra identity at capacity: DETECTED
+--- FAIL: TestRejectedAttemptsDoNotExtendLogOrCapacity (0.00s)
+    slidingwindow_test.go:208: {true 0 0s }
+FAIL
+FAIL	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/tests/algorithm/slidingwindow	0.356s
+FAIL
+
+RAM: record rejected requests: DETECTED
+--- FAIL: TestRollingWindowAndRollback (0.00s)
+    slidingwindow_test.go:43: at 11s: got {Allowed:false Remaining:0 RetryAfter:8s Reason:rate_limited} want {Allowed:true Remaining:0 RetryAfter:0s Reason:}
+FAIL
+FAIL	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/tests/algorithm/slidingwindow	0.342s
+FAIL
+
+Redis: include expired boundary timestamp: DETECTED
+--- FAIL: TestRAMRedisRollingParity (0.02s)
+    limiter_test.go:113: at 11 key u: Redis {Allowed:false Remaining:0 RetryAfter:0s Reason:rate_limited} err <nil> RAM {Allowed:true Remaining:0 RetryAfter:0s Reason:}
+FAIL
+FAIL	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/tests/algorithm/slidingwindow/redis	0.408s
+FAIL
+
+Redis: allow one extra identity at capacity: DETECTED
+--- FAIL: TestRAMRedisRollingParity (0.02s)
+    limiter_test.go:113: at 13 key w: Redis {Allowed:true Remaining:1 RetryAfter:0s Reason:} err <nil> RAM {Allowed:false Remaining:0 RetryAfter:0s Reason:capacity_exceeded}
+FAIL
+FAIL	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/tests/algorithm/slidingwindow/redis	0.451s
+FAIL

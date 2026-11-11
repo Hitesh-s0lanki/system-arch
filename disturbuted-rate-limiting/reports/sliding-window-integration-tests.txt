@@ -1,0 +1,2 @@
+ok  	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/tests/sdk	1.216s
+ok  	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/tests/internal/proxyapp	12.669s

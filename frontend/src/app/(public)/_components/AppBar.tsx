@@ -41,15 +41,13 @@ export function AppBar({ title = 'Overview', breadcrumb = [] }: AppBarProps) {
 
   const pageTitle = pathname.startsWith('/system-design/rate-limiter/docs')
     ? 'Rate Limiter / Installation guide'
-    : pathname.startsWith('/system-design/rate-limiter/fixed-window')
-      ? 'Rate Limiter / Fixed Window Counter'
-      : pathname.startsWith('/system-design/rate-limiter')
-        ? 'Rate Limiter'
-        : pathname.startsWith('/system-design/load-tester')
-          ? 'Load Tester'
-          : pathname.startsWith('/system-design/video-streaming')
-            ? 'Video Streaming / StreamFlow'
-            : title
+    : pathname.startsWith('/system-design/rate-limiter')
+      ? 'Rate Limiter'
+      : pathname.startsWith('/system-design/load-tester')
+        ? 'Load Tester'
+        : pathname.startsWith('/system-design/video-streaming')
+          ? 'Video Streaming / StreamFlow'
+          : title
 
   React.useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -159,7 +157,7 @@ export function AppBar({ title = 'Overview', breadcrumb = [] }: AppBarProps) {
             <CommandItem
               onSelect={() =>
                 runCommand(() =>
-                  router.push('/system-design/rate-limiter/fixed-window'),
+                  router.push('/system-design/rate-limiter/algorithms'),
                 )
               }
             >
@@ -169,7 +167,7 @@ export function AppBar({ title = 'Overview', breadcrumb = [] }: AppBarProps) {
             <CommandItem
               onSelect={() =>
                 runCommand(() =>
-                  router.push('/system-design/rate-limiter/fixed-window'),
+                  router.push('/system-design/rate-limiter/algorithms'),
                 )
               }
             >
@@ -179,7 +177,7 @@ export function AppBar({ title = 'Overview', breadcrumb = [] }: AppBarProps) {
             <CommandItem
               onSelect={() =>
                 runCommand(() =>
-                  router.push('/system-design/rate-limiter/fixed-window'),
+                  router.push('/system-design/rate-limiter/algorithms'),
                 )
               }
             >
@@ -189,7 +187,7 @@ export function AppBar({ title = 'Overview', breadcrumb = [] }: AppBarProps) {
             <CommandItem
               onSelect={() =>
                 runCommand(() =>
-                  router.push('/system-design/rate-limiter/fixed-window'),
+                  router.push('/system-design/rate-limiter/algorithms'),
                 )
               }
             >

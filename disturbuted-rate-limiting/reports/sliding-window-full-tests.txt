@@ -1,0 +1,48 @@
+?   	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting	[no test files]
+?   	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/algorithm/fixedwindow	[no test files]
+?   	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/algorithm/fixedwindow/redis	[no test files]
+?   	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/algorithm/leakybucket	[no test files]
+?   	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/algorithm/leakybucket/redis	[no test files]
+?   	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/algorithm/slidingcounter	[no test files]
+?   	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/algorithm/slidingcounter/redis	[no test files]
+?   	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/algorithm/slidingwindow	[no test files]
+?   	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/algorithm/slidingwindow/redis	[no test files]
+?   	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/algorithm/tokenbucket	[no test files]
+?   	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/algorithm/tokenbucket/redis	[no test files]
+?   	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/auth	[no test files]
+?   	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/cmd/ratelimitd	[no test files]
+?   	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/examples/backend	[no test files]
+?   	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/examples/identitybased	[no test files]
+?   	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/examples/sdk	[no test files]
+?   	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/identity	[no test files]
+?   	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/internal/app	[no test files]
+?   	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/internal/httpserver	[no test files]
+?   	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/internal/proxyapp	[no test files]
+?   	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/internal/redisutil	[no test files]
+?   	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/internal/telemetry	[no test files]
+?   	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/maintenance	[no test files]
+?   	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/middleware/http	[no test files]
+?   	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/policy	[no test files]
+?   	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/sdk	[no test files]
+?   	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/service	[no test files]
+ok  	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/tests/algorithm/fixedwindow	1.500s
+ok  	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/tests/algorithm/fixedwindow/redis	2.246s
+ok  	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/tests/algorithm/leakybucket	2.072s
+ok  	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/tests/algorithm/leakybucket/redis	6.578s
+ok  	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/tests/algorithm/slidingcounter	1.855s
+ok  	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/tests/algorithm/slidingcounter/redis	1.706s
+ok  	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/tests/algorithm/slidingwindow	1.153s
+ok  	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/tests/algorithm/slidingwindow/redis	1.407s
+ok  	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/tests/algorithm/tokenbucket	1.473s
+ok  	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/tests/algorithm/tokenbucket/redis	5.290s
+ok  	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/tests/auth	1.741s
+ok  	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/tests/identity	1.638s
+ok  	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/tests/internal/app	1.516s
+ok  	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/tests/internal/proxyapp	7.542s
+?   	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/tests/leakybucket/latency	[no test files]
+ok  	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/tests/maintenance	1.405s
+ok  	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/tests/middleware/http	1.440s
+ok  	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/tests/policy	1.406s
+ok  	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/tests/sdk	1.495s
+ok  	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/tests/service	1.407s
+?   	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/tests/testredis	[no test files]
