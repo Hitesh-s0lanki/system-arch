@@ -2,6 +2,7 @@ name: Rate limiter
 
 on:
   push:
+    branches: [main]
     paths: ['disturbuted-rate-limiting/**', '.github/workflows/rate-limiter.yml']
   pull_request:
     paths: ['disturbuted-rate-limiting/**', '.github/workflows/rate-limiter.yml']
@@ -28,7 +29,7 @@ jobs:
         options: --health-cmd "redis-cli ping" --health-interval 2s --health-timeout 2s --health-retries 15
     env:
       REDIS_TEST_URL: redis://127.0.0.1:16379/0
-      REDIS_SERVER_BIN: /usr/bin/redis-server
+      REDIS_SERVER_BIN: /tmp/redis-7.4.7/src/redis-server
       TOKEN_BUCKET_TEST_BINARY: /tmp/ratelimitd-ci
     steps:
       - uses: actions/checkout@v4
@@ -38,17 +39,16 @@ jobs:
         with:
           go-version-file: disturbuted-rate-limiting/go.mod
           cache-dependency-path: disturbuted-rate-limiting/go.sum
-      - name: Install isolated Redis test server
+      - name: Build isolated Redis test server
+        timeout-minutes: 5
         run: |
-          for attempt in 1 2 3; do
-            if sudo apt-get update && sudo apt-get install -y redis-server; then
-              exit 0
-            fi
-            echo "apt attempt $attempt failed; falling back to archive.ubuntu.com and retrying" >&2
-            printf 'http://archive.ubuntu.com/ubuntu\nhttp://security.ubuntu.com/ubuntu\n' | sudo tee /etc/apt/apt-mirrors.txt >/dev/null
-            sleep 20
-          done
-          exit 1
+          # Use the runner's compiler instead of depending on apt mirror DNS.
+          curl --fail --location --retry 3 --connect-timeout 10 --max-time 60 \
+            https://download.redis.io/releases/redis-7.4.7.tar.gz -o /tmp/redis-7.4.7.tar.gz
+          echo 'c97e57b0df330a9e091cacff012bebe763c275398cf36ff44cdba876814b595b  /tmp/redis-7.4.7.tar.gz' | sha256sum --check
+          tar -xzf /tmp/redis-7.4.7.tar.gz -C /tmp
+          make -C /tmp/redis-7.4.7 -j2 MALLOC=libc BUILD_TLS=no OPTIMIZATION=-O2 redis-server
+          "$REDIS_SERVER_BIN" --version
       - name: Check formatting and dependencies
         run: |
           unformatted=$(find . -name '*.go' -print0 | xargs -0 gofmt -l)
