@@ -55,6 +55,8 @@ def exercise(mode):
         config_path.write_text(json.dumps(config))
         override = Path(directory) / "compose.yaml"
         # Override both the port and mount, so no developer stack/config is reused.
+        # REDIS_URL must be repeated here: "extends" copies the base compose.yaml
+        # gateway only, so compose.redis.yaml's gateway env never reaches the replica.
         gateway = f"""    ports: !override [\"127.0.0.1::8080\"]
     volumes:
       - {json.dumps(str(config_path) + ':/etc/ratelimit/proxy.json:ro')}
@@ -63,6 +65,7 @@ def exercise(mode):
       RATE_LIMIT_NAMESPACE: {project}
       RATE_LIMIT_CREDENTIALS: '[]'
       RATE_LIMIT_UPSTREAM: http://backend:8080
+      REDIS_URL: {json.dumps('redis://redis:6379/0')}
 """
         override.write_text("services:\n  gateway:\n" + gateway + "  replica:\n"
                             "    extends:\n      file: " + json.dumps(str(ROOT / "compose.yaml")) + "\n      service: gateway\n"
