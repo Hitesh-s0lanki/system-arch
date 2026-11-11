@@ -39,7 +39,16 @@ jobs:
           go-version-file: disturbuted-rate-limiting/go.mod
           cache-dependency-path: disturbuted-rate-limiting/go.sum
       - name: Install isolated Redis test server
-        run: sudo apt-get update && sudo apt-get install -y redis-server
+        run: |
+          for attempt in 1 2 3; do
+            if sudo apt-get update && sudo apt-get install -y redis-server; then
+              exit 0
+            fi
+            echo "apt attempt $attempt failed; falling back to archive.ubuntu.com and retrying" >&2
+            printf 'http://archive.ubuntu.com/ubuntu\nhttp://security.ubuntu.com/ubuntu\n' | sudo tee /etc/apt/apt-mirrors.txt >/dev/null
+            sleep 20
+          done
+          exit 1
       - name: Check formatting and dependencies
         run: |
           unformatted=$(find . -name '*.go' -print0 | xargs -0 gofmt -l)
