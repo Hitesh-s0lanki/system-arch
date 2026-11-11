@@ -90,16 +90,6 @@ jobs:
       - name: Clean up load stack
         if: always()
         run: docker compose -p rate-limiter-ci -f compose.yaml -f compose.redis.yaml -f tests/load/compose.yaml down -v --remove-orphans
-      - name: Export tested image
-        if: github.event_name != 'pull_request' && github.ref_name == github.event.repository.default_branch
-        run: docker save "$RATE_LIMIT_IMAGE" -o "${{ runner.temp }}/rate-limiter.tar"
-      - uses: actions/upload-artifact@v4
-        if: github.event_name != 'pull_request' && github.ref_name == github.event.repository.default_branch
-        with:
-          name: rate-limiter-image
-          path: ${{ runner.temp }}/rate-limiter.tar
-          retention-days: 1
-          compression-level: 0
 
   publish:
     # Only trusted default-branch changes can access registry credentials.
@@ -124,10 +114,13 @@ jobs:
           test -n "$DOCKERHUB_TOKEN" || { echo 'Set repository secret DOCKERHUB_TOKEN with write access'; exit 1; }
           echo "GHCR_IMAGE=ghcr.io/${REPOSITORY,,}/distributed-rate-limiter" >> "$GITHUB_ENV"
           echo "HUB_IMAGE=${DOCKERHUB_IMAGE:-$DOCKERHUB_USERNAME/distributed-rate-limiter}" >> "$GITHUB_ENV"
-      - uses: actions/download-artifact@v4
+      - uses: actions/checkout@v4
         with:
-          name: rate-limiter-image
-          path: ${{ runner.temp }}/image
+          persist-credentials: false
+      - uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64
+      - uses: docker/setup-buildx-action@v3
       - uses: docker/login-action@v4
         with:
           registry: ghcr.io
@@ -137,13 +130,19 @@ jobs:
         with:
           username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Publish the tested image to both registries
+      - name: Publish multi-arch image to both registries
+        uses: docker/build-push-action@v6
+        with:
+          context: disturbuted-rate-limiting
+          target: runtime
+          platforms: linux/amd64,linux/arm64
+          push: true
+          provenance: false
+          tags: |
+            ${{ env.GHCR_IMAGE }}:sha-${{ env.REVISION }}
+            ${{ env.GHCR_IMAGE }}:latest
+            ${{ env.HUB_IMAGE }}:sha-${{ env.REVISION }}
+            ${{ env.HUB_IMAGE }}:latest
+      - name: Record published tags
         run: |
-          docker load -i "${{ runner.temp }}/image/rate-limiter.tar"
-          for image in "$GHCR_IMAGE" "$HUB_IMAGE"; do
-            docker tag rate-limiter:ci "$image:sha-$REVISION"
-            docker push "$image:sha-$REVISION"
-            docker tag rate-limiter:ci "$image:latest"
-            docker push "$image:latest"
-            printf 'Published %s:sha-%s and %s:latest\n\n' "$image" "$REVISION" "$image" >> "$GITHUB_STEP_SUMMARY"
-          done
+          printf 'Published %s and %s for linux/amd64 and linux/arm64 (tags: latest, sha-%s)\n' "$GHCR_IMAGE" "$HUB_IMAGE" "$REVISION" >> "$GITHUB_STEP_SUMMARY"
