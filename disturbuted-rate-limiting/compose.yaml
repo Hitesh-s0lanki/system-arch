@@ -1,7 +1,7 @@
 name: rate-limiter
 
 x-image: &image
-  image: rate-limiter:local
+  image: ${RATE_LIMIT_IMAGE:-rate-limiter:local}
   build:
     context: .
     target: runtime
@@ -25,7 +25,7 @@ services:
       RATE_LIMIT_CREDENTIALS: ${RATE_LIMIT_CREDENTIALS:-[]}
       RATE_LIMIT_METRICS_TOKEN: ${RATE_LIMIT_METRICS_TOKEN:-}
     volumes:
-      - ./configs/proxy.json:/etc/ratelimit/proxy.json:ro
+      - ${RATE_LIMIT_CONFIG:-./configs/proxy.json}:/etc/ratelimit/proxy.json:ro
     depends_on:
       backend:
         condition: service_healthy

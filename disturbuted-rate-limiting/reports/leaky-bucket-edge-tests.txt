@@ -1,0 +1,42 @@
+=== RUN   TestDrainRetryAndClockRollback
+--- PASS: TestDrainRetryAndClockRollback (0.00s)
+=== RUN   TestCapacityValidationAndCancellation
+--- PASS: TestCapacityValidationAndCancellation (0.00s)
+=== RUN   TestConcurrentAdmission
+--- PASS: TestConcurrentAdmission (0.00s)
+=== RUN   TestFractionalRateRetry
+--- PASS: TestFractionalRateRetry (0.00s)
+=== RUN   TestRandomizedIntegerReference
+=== RUN   TestRandomizedIntegerReference/3-1s
+=== RUN   TestRandomizedIntegerReference/7-13ms
+=== RUN   TestRandomizedIntegerReference/10-1ns
+=== RUN   TestRandomizedIntegerReference/1-37ns
+--- PASS: TestRandomizedIntegerReference (0.12s)
+    --- PASS: TestRandomizedIntegerReference/3-1s (0.03s)
+    --- PASS: TestRandomizedIntegerReference/7-13ms (0.04s)
+    --- PASS: TestRandomizedIntegerReference/10-1ns (0.02s)
+    --- PASS: TestRandomizedIntegerReference/1-37ns (0.02s)
+=== RUN   TestConcurrentCleanupAndUsage
+--- PASS: TestConcurrentCleanupAndUsage (0.10s)
+PASS
+ok  	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/tests/algorithm/leakybucket	1.640s
+=== RUN   TestRAMRedisDrainParity
+--- PASS: TestRAMRedisDrainParity (0.04s)
+=== RUN   TestReplicasConcurrencyCapacityAndCompatibility
+--- PASS: TestReplicasConcurrencyCapacityAndCompatibility (0.04s)
+=== RUN   TestExpiryInvalidKeysAndReadiness
+--- PASS: TestExpiryInvalidKeysAndReadiness (0.11s)
+=== RUN   TestConstructorValidation
+--- PASS: TestConstructorValidation (0.00s)
+=== RUN   TestRandomizedRAMRedisParity
+=== RUN   TestRandomizedRAMRedisParity/3-1s
+=== RUN   TestRandomizedRAMRedisParity/7-13ms
+=== RUN   TestRandomizedRAMRedisParity/100-1ms
+--- PASS: TestRandomizedRAMRedisParity (2.98s)
+    --- PASS: TestRandomizedRAMRedisParity/3-1s (0.92s)
+    --- PASS: TestRandomizedRAMRedisParity/7-13ms (1.22s)
+    --- PASS: TestRandomizedRAMRedisParity/100-1ms (0.84s)
+=== RUN   TestPartialDrainExpiryAndPolicyScope
+--- PASS: TestPartialDrainExpiryAndPolicyScope (0.01s)
+PASS
+ok  	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/tests/algorithm/leakybucket/redis	4.662s

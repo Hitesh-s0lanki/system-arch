@@ -16,6 +16,7 @@
   "routes": [
     {
       "pattern": "/",
+      "algorithm": "fixed_window",
       "policy": {
         "id": "default-ip",
         "identity": "ip",

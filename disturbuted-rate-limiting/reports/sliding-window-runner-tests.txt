@@ -1,0 +1,91 @@
+./tests/slidingwindow/run.sh
+-test.shuffle 1794399241479014000
+=== RUN   TestConcurrentCleanupPreservesActiveLog
+--- PASS: TestConcurrentCleanupPreservesActiveLog (0.00s)
+=== RUN   TestHeapRescheduleAndPartialExpiry
+--- PASS: TestHeapRescheduleAndPartialExpiry (0.00s)
+=== RUN   TestRandomizedReference
+--- PASS: TestRandomizedReference (0.01s)
+=== RUN   TestRejectedAttemptsDoNotExtendLogOrCapacity
+--- PASS: TestRejectedAttemptsDoNotExtendLogOrCapacity (0.00s)
+=== RUN   TestConcurrentQuotaAndCapacity
+--- PASS: TestConcurrentQuotaAndCapacity (0.00s)
+=== RUN   TestRollingWindowAndRollback
+--- PASS: TestRollingWindowAndRollback (0.00s)
+=== RUN   TestNanosecondWindowAndExactKeySemantics
+--- PASS: TestNanosecondWindowAndExactKeySemantics (0.00s)
+=== RUN   TestValidationAndCancellation
+--- PASS: TestValidationAndCancellation (0.00s)
+=== RUN   TestCancellationWhileWaitingForMutexDoesNotCharge
+--- PASS: TestCancellationWhileWaitingForMutexDoesNotCharge (0.00s)
+PASS
+ok  	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/tests/algorithm/slidingwindow	1.148s
+-test.shuffle 1794399241947276000
+=== RUN   TestRAMRedisRollingParity
+--- PASS: TestRAMRedisRollingParity (0.03s)
+=== RUN   TestConstructorValidation
+--- PASS: TestConstructorValidation (0.00s)
+=== RUN   TestReplicasConcurrencyCapacityAndCompatibility
+--- PASS: TestReplicasConcurrencyCapacityAndCompatibility (0.04s)
+=== RUN   TestLostReplyDoesNotRetryOrDoubleCharge
+--- PASS: TestLostReplyDoesNotRetryOrDoubleCharge (0.01s)
+=== RUN   TestMillisecondBoundaryAndExactKeySemantics
+--- PASS: TestMillisecondBoundaryAndExactKeySemantics (0.01s)
+=== RUN   TestExpiryInvalidKeysAndReadiness
+--- PASS: TestExpiryInvalidKeysAndReadiness (0.11s)
+=== RUN   TestBackendTimeoutIsBounded
+--- PASS: TestBackendTimeoutIsBounded (0.03s)
+=== RUN   TestInvalidAndCanceledChecksDoNotTouchRedis
+--- PASS: TestInvalidAndCanceledChecksDoNotTouchRedis (0.00s)
+=== RUN   TestScopeIsolationAndPersistentCompatibility
+=== RUN   TestScopeIsolationAndPersistentCompatibility/policy
+=== RUN   TestScopeIsolationAndPersistentCompatibility/revision
+=== RUN   TestScopeIsolationAndPersistentCompatibility/tenant
+=== RUN   TestScopeIsolationAndPersistentCompatibility/limit
+=== RUN   TestScopeIsolationAndPersistentCompatibility/window
+=== RUN   TestScopeIsolationAndPersistentCompatibility/capacity
+=== RUN   TestScopeIsolationAndPersistentCompatibility/identity_semantics
+--- PASS: TestScopeIsolationAndPersistentCompatibility (0.01s)
+    --- PASS: TestScopeIsolationAndPersistentCompatibility/policy (0.00s)
+    --- PASS: TestScopeIsolationAndPersistentCompatibility/revision (0.00s)
+    --- PASS: TestScopeIsolationAndPersistentCompatibility/tenant (0.00s)
+    --- PASS: TestScopeIsolationAndPersistentCompatibility/limit (0.00s)
+    --- PASS: TestScopeIsolationAndPersistentCompatibility/window (0.00s)
+    --- PASS: TestScopeIsolationAndPersistentCompatibility/capacity (0.00s)
+    --- PASS: TestScopeIsolationAndPersistentCompatibility/identity_semantics (0.00s)
+=== RUN   TestConcurrentIdentityCapacity
+--- PASS: TestConcurrentIdentityCapacity (0.02s)
+PASS
+ok  	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/tests/algorithm/slidingwindow/redis	1.436s
+-test.shuffle 1794399244199415000
+=== RUN   TestSlidingWindowSDKBothBackends
+=== RUN   TestSlidingWindowSDKBothBackends/ram
+=== RUN   TestSlidingWindowSDKBothBackends/redis
+--- PASS: TestSlidingWindowSDKBothBackends (0.02s)
+    --- PASS: TestSlidingWindowSDKBothBackends/ram (0.00s)
+    --- PASS: TestSlidingWindowSDKBothBackends/redis (0.02s)
+=== RUN   TestSlidingWindowSDKCleanupAndValidation
+--- PASS: TestSlidingWindowSDKCleanupAndValidation (0.00s)
+PASS
+ok  	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/tests/sdk	1.180s
+-test.shuffle 1794399245009372000
+=== RUN   TestSlidingWindowProxyBothBackends
+=== RUN   TestSlidingWindowProxyBothBackends/ram
+2026/11/11 17:44:05 INFO request completed route=/ status=204 duration_ms=2
+2026/11/11 17:44:05 INFO request completed route=/ status=429 duration_ms=0
+2026/11/11 17:44:05 INFO request completed route=/ status=503 duration_ms=0
+2026/11/11 17:44:05 INFO request completed route=/ status=204 duration_ms=1
+=== RUN   TestSlidingWindowProxyBothBackends/redis
+2026/11/11 17:44:05 INFO request completed route=/ status=204 duration_ms=2
+2026/11/11 17:44:05 INFO request completed route=/ status=429 duration_ms=1
+2026/11/11 17:44:05 INFO request completed route=/ status=503 duration_ms=1
+2026/11/11 17:44:06 INFO request completed route=/ status=204 duration_ms=3
+2026/11/11 17:44:06 WARN rate limiter decision failed policy=ip error="slidingwindow redis: redis: client is closed"
+2026/11/11 17:44:06 INFO request completed route=/ status=503 duration_ms=0
+--- PASS: TestSlidingWindowProxyBothBackends (1.15s)
+    --- PASS: TestSlidingWindowProxyBothBackends/ram (0.56s)
+    --- PASS: TestSlidingWindowProxyBothBackends/redis (0.59s)
+=== RUN   TestRejectUnknownOrInconsistentAlgorithm
+--- PASS: TestRejectUnknownOrInconsistentAlgorithm (0.00s)
+PASS
+ok  	github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/tests/internal/proxyapp	2.329s

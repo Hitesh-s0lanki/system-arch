@@ -1,249 +1,303 @@
 import { expect, test } from '@playwright/test'
 import { readFile } from 'node:fs/promises'
 
-test('architecture explains RAM and Redis decisions without sending upstream traffic', async ({
+const config = {
+  algorithm: 'fixed_window',
+  storage: 'ram',
+  target: 'demo',
+  upstream: 'https://example.com',
+  identity: 'ip',
+  limit: 2,
+  windowSeconds: 60,
+  capacity: 1,
+}
+const origin = process.env.FRONTEND_URL || 'http://localhost:3000'
+
+test('hosted controls stay disabled, configuration exports, and mobile layout fits', async ({
   page,
 }, testInfo) => {
-  const upstreamRequests: string[] = []
-  const errors: string[] = []
-  page.on('request', (request) => {
-    if (new URL(request.url()).hostname === 'hiteshsolanki.com')
-      upstreamRequests.push(request.url())
-  })
-  page.on('pageerror', (error) => errors.push(error.message))
-  await page.goto('/system-design/rate-limiter/fixed-window')
-  await expect(
-    page.getByRole('heading', { name: 'From client to backend' }),
-  ).toBeVisible()
-  await page.getByRole('button', { name: 'Inspect RAM counters' }).click()
-  await expect(
-    page.getByRole('heading', { name: 'RAM belongs to one gateway' }),
-  ).toBeVisible()
-  for (let i = 0; i < 3; i++)
-    await page.getByRole('button', { name: 'Simulate request' }).click()
-  await expect(page.getByRole('status')).toContainText('200 · Forwarded')
-  await expect(page.getByTestId('remaining-allowance')).toHaveText(
-    '0 / 3 remaining',
+  await page.route('**/api/rate-limiter/control', (route) =>
+    route.fulfill({ status: 403, json: { available: false } }),
   )
-  await page.getByRole('button', { name: 'Simulate request' }).click()
-  await expect(page.getByRole('status')).toContainText('429 · Rate limited')
-  await expect(page.getByRole('status')).toContainText(
-    '4 attempted · 3 forwarded',
-  )
-  await expect(
-    page.getByRole('button', { name: 'Inspect Backend service' }),
-  ).toContainText('Not reached')
-  await page.getByRole('button', { name: 'Reset window' }).click()
-  await expect(page.getByTestId('remaining-allowance')).toHaveText(
-    '3 / 3 remaining',
-  )
-
-  await page.getByText('Redis', { exact: true }).click()
-  await expect(
-    page.getByRole('radio', { name: 'Redis', exact: true }),
-  ).toBeChecked()
-  await page.getByRole('button', { name: 'Inspect Redis state' }).click()
-  await expect(
-    page.getByRole('heading', { name: 'Redis shares the allowance' }),
-  ).toBeVisible()
-  await page.getByRole('checkbox', { name: 'Redis available' }).uncheck()
-  await page.getByRole('button', { name: 'Simulate request' }).click()
-  await expect(page.getByRole('status')).toContainText(
-    '503 · Redis unavailable',
-  )
-  await expect(page.getByTestId('remaining-allowance')).toHaveText(
-    '3 / 3 remaining',
-  )
-  await expect(page.getByRole('status')).toContainText('0 forwarded')
-  await page.evaluate(() => window.scrollTo(0, 0))
-  await page.screenshot({
-    path: testInfo.outputPath('redis-outage-desktop.png'),
-    fullPage: true,
-  })
-  await page.getByRole('checkbox', { name: 'Redis available' }).check()
-  await page.getByRole('button', { name: 'Simulate request' }).click()
-  await expect(page.getByRole('status')).toContainText('200 · Forwarded')
-  await expect(
-    page.getByText('Historical test against hiteshsolanki.com', {
-      exact: false,
-    }),
-  ).toBeVisible()
-  expect(upstreamRequests).toEqual([])
-  expect(errors).toEqual([])
-})
-
-test('architecture fits a mobile viewport and supports keyboard storage selection', async ({
-  page,
-}, testInfo) => {
   await page.setViewportSize({ width: 390, height: 844 })
-  await page.goto('/system-design/rate-limiter/fixed-window')
-  await page.getByRole('radio', { name: 'RAM', exact: true }).focus()
-  await page.keyboard.press('ArrowRight')
+  await page.goto('/system-design/rate-limiter/proxy-mode')
   await expect(
-    page.getByRole('radio', { name: 'Redis', exact: true }),
-  ).toBeChecked()
-  await expect(
-    page.getByRole('button', { name: 'Inspect Redis state' }),
+    page.getByRole('heading', { name: 'Try the proxy locally', exact: true }),
   ).toBeVisible()
-  const fits = await page.evaluate(
-    () => document.documentElement.scrollWidth <= window.innerWidth,
-  )
-  expect(fits).toBe(true)
-  await page.evaluate(() => window.scrollTo(0, 0))
-  await page.screenshot({
-    path: testInfo.outputPath('architecture-mobile.png'),
-    fullPage: true,
-  })
-})
-
-test('custom website and multiple identity policies update the model and export deployable JSON', async ({
-  page,
-}, testInfo) => {
-  await page.goto('/system-design/rate-limiter/fixed-window')
-  await page.getByLabel('Backend website URL').fill('https://example.com/api')
-  await page
-    .getByRole('combobox', { name: 'Limit by · rule 1', exact: true })
-    .selectOption('api_key')
-  await page
-    .getByLabel('Requests per window · rule 1', { exact: true })
-    .fill('2')
-  await page
-    .getByLabel('Window in seconds · rule 1', { exact: true })
-    .fill('60')
-  await page.getByRole('button', { name: 'Add policy rule' }).click()
-  await page
-    .getByRole('combobox', { name: 'Limit by · rule 2', exact: true })
-    .selectOption('user')
-  await page
-    .getByLabel('Requests per window · rule 2', { exact: true })
-    .fill('1')
-  await page.getByRole('button', { name: 'Apply to diagram' }).click()
   await expect(
-    page.getByRole('button', { name: 'Inspect Backend service' }),
-  ).toContainText('example.com/api')
+    page.getByRole('button', { name: 'Start Docker' }),
+  ).toBeDisabled()
   await expect(
-    page.getByRole('button', { name: 'Inspect Rate limiter + proxy' }),
-  ).toContainText('2 requests / 60 seconds')
-  await page.getByRole('button', { name: 'Simulate request' }).click()
-  await page.getByRole('button', { name: 'Simulate request' }).click()
-  await page.getByRole('button', { name: 'Simulate request' }).click()
-  await expect(page.getByRole('status')).toContainText('429 · Rate limited')
+    page.getByRole('button', { name: 'Send request' }),
+  ).toBeDisabled()
   await page
-    .getByLabel('Example api credential id', { exact: true })
-    .fill('credential-other')
-  await page.getByRole('button', { name: 'Simulate request' }).click()
-  await expect(page.getByRole('status')).toContainText('200 · Forwarded')
-  await expect(page.getByTestId('remaining-allowance')).toHaveText(
-    '1 / 2 remaining',
-  )
-  await page
-    .getByLabel('Example api credential id', { exact: true })
-    .fill('credential-7')
-  await expect(page.getByTestId('remaining-allowance')).toHaveText(
-    '0 / 2 remaining',
-  )
-  await page
-    .getByRole('combobox', { name: 'Simulate policy', exact: true })
-    .selectOption('1')
-  await page.getByRole('button', { name: 'Simulate request' }).click()
-  await expect(page.getByTestId('remaining-allowance')).toHaveText(
-    '0 / 1 remaining',
-  )
-  await page
-    .getByRole('combobox', { name: 'Simulate policy', exact: true })
-    .selectOption('0')
-  await expect(page.getByTestId('remaining-allowance')).toHaveText(
-    '0 / 2 remaining',
-  )
-
+    .getByLabel('Algorithm', { exact: true })
+    .selectOption('token_bucket')
+  await page.getByText('Customize settings', { exact: true }).click()
+  await page.getByLabel('Burst capacity').fill('7')
   const downloading = page.waitForEvent('download')
-  await page.getByRole('button', { name: 'Download proxy.json' }).click()
+  await page.getByRole('button', { name: 'Config', exact: true }).click()
   const download = await downloading
   const output = testInfo.outputPath('proxy.json')
   await download.saveAs(output)
-  const config = JSON.parse(await readFile(output, 'utf8'))
-  expect(config.version).toBe(1)
-  expect(config.upstream).toBe('https://example.com/api')
-  expect(config.storage.mode).toBe('ram')
-  expect(config.routes).toHaveLength(2)
-  expect(config.routes[0]).toMatchObject({
-    limit: 2,
-    window: '60s',
-    policy: { identity: 'api_key' },
+  const exported = JSON.parse(await readFile(output, 'utf8'))
+  expect(exported.routes[0]).toMatchObject({
+    algorithm: 'token_bucket',
+    capacity: 7,
   })
-  expect(config.routes[1].policy.identity).toBe('user')
-  expect(config).not.toHaveProperty('credentials')
-  await page.evaluate(() => window.scrollTo(0, 0))
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth,
+    ),
+  ).toBe(true)
   await page.screenshot({
-    path: testInfo.outputPath('custom-policies-desktop.png'),
+    path: testInfo.outputPath('demo-mobile.png'),
     fullPage: true,
   })
 })
 
-test('invalid configuration is rejected and identity capacity preserves existing counters', async ({
+test('local endpoints reject remote hosts, cross-origin calls, and malformed configuration', async ({
+  request,
+}) => {
+  expect(
+    (
+      await request.get('/api/rate-limiter/control', {
+        headers: { Host: 'example.com' },
+      })
+    ).status(),
+  ).toBe(403)
+  expect(
+    (
+      await request.post('/api/rate-limiter/control', {
+        headers: { Origin: 'https://example.com' },
+        data: { action: 'start', config },
+      })
+    ).status(),
+  ).toBe(403)
+  expect(
+    (
+      await request.post('/api/rate-limiter/control', {
+        data: { action: 'start', config },
+      })
+    ).status(),
+  ).toBe(403)
+  const bad = await request.post('/api/rate-limiter/control', {
+    headers: { Origin: origin },
+    data: { action: 'start', config: { ...config, algorithm: 'bogus' } },
+  })
+  expect(bad.status()).toBe(400)
+  expect(await bad.json()).toMatchObject({ error: 'Choose an algorithm.' })
+})
+
+test('start Docker in the UI, forward requests, enforce limits, and isolate verified users', async ({
+  page,
+}, testInfo) => {
+  const errors: string[] = []
+  page.on('pageerror', (error) => errors.push(error.message))
+  await page.goto('/system-design/rate-limiter/proxy-mode')
+  await page.getByText('Customize settings', { exact: true }).click()
+  await page.getByLabel('Requests', { exact: true }).fill('2')
+  await page.getByLabel('Window (seconds)').fill('60')
+  await page
+    .getByRole('button', { name: /Start Docker|Apply & restart Docker/ })
+    .click()
+  try {
+    await expect(
+      page.getByText('Docker is ready', { exact: true }),
+    ).toBeVisible({ timeout: 150000 })
+    for (let i = 0; i < 2; i++) {
+      await page.getByRole('button', { name: 'Send request' }).click()
+      await expect(
+        page.getByRole('button', { name: 'Send request' }),
+      ).toBeEnabled()
+      await expect(page.getByRole('status')).toContainText('200')
+    }
+    await page.getByRole('button', { name: 'Send request' }).click()
+    await expect(page.getByRole('status')).toContainText('429 · Rate limited')
+    await expect(page.getByRole('status')).toContainText('Retry after')
+    await page.getByLabel('Limit by', { exact: true }).selectOption('user')
+    await expect(
+      page.getByRole('button', { name: 'Send request' }),
+    ).toBeDisabled()
+    await page.getByRole('button', { name: 'Apply & restart Docker' }).click()
+    await expect(
+      page.getByText('Docker is ready', { exact: true }),
+    ).toBeVisible({ timeout: 90000 })
+    await page.getByLabel('Method', { exact: true }).selectOption('POST')
+    await page.getByLabel('Request path').fill('/orders?source=browser')
+    await page.getByText('Headers & request body', { exact: true }).click()
+    await page
+      .getByLabel('Headers (JSON)')
+      .fill('{"Content-Type":"text/plain","X-Demo":"hello"}')
+    await page
+      .getByLabel('Request body', { exact: true })
+      .fill('hello from the browser')
+    await page.getByRole('button', { name: 'Send request' }).click()
+    await expect(page.getByLabel('Response body')).toContainText(
+      'hello from the browser',
+    )
+    await expect(page.getByLabel('Response body')).toContainText('user-1')
+    await expect(page.getByLabel('Response body')).toContainText(
+      'source=browser',
+    )
+    await page.getByLabel('Client identity').selectOption('1')
+    await page.getByRole('button', { name: 'Send request' }).click()
+    await expect(page.getByLabel('Response body')).toContainText('user-2')
+    await page.screenshot({
+      path: testInfo.outputPath('demo-desktop.png'),
+      fullPage: true,
+    })
+    expect(errors).toEqual([])
+  } finally {
+    await page.getByRole('button', { name: 'Stop', exact: true }).click()
+    await expect(
+      page.getByText('Start Docker to launch the proxy and sample API.', {
+        exact: true,
+      }),
+    ).toBeVisible({ timeout: 30000 })
+  }
+})
+
+test('each algorithm launches in RAM and Redis and enforces API-key quotas', async ({
+  request,
+}) => {
+  test.setTimeout(360000)
+  const headers = { Origin: origin }
+  let current = config
+  async function send(client = 0) {
+    const response = await request.post('/api/rate-limiter/request', {
+      headers,
+      data: { method: 'GET', path: '/test', headers: {}, body: '', client },
+    })
+    expect(response.ok()).toBe(true)
+    return response.json()
+  }
+  try {
+    for (const storage of ['ram', 'redis']) {
+      for (const algorithm of [
+        'fixed_window',
+        'sliding_window_log',
+        'sliding_window_counter',
+        'token_bucket',
+        'leaky_bucket',
+      ]) {
+        current = {
+          ...config,
+          algorithm,
+          storage,
+          identity: 'api_key',
+          limit: 1,
+        }
+        const start = await request.post('/api/rate-limiter/control', {
+          headers,
+          data: { action: 'start', config: current },
+        })
+        expect(start.status()).toBe(202)
+        await expect
+          .poll(
+            async () => {
+              const state = await (
+                await request.get('/api/rate-limiter/control')
+              ).json()
+              if (state.phase === 'error') throw new Error(state.error)
+              return state.phase
+            },
+            { timeout: 90000, intervals: [1000] },
+          )
+          .toBe('running')
+        expect(
+          (await send()).status,
+          `${algorithm}/${storage} first request`,
+        ).toBe(200)
+        expect((await send()).status, `${algorithm}/${storage} limit`).toBe(429)
+        expect(
+          (await send(1)).status,
+          `${algorithm}/${storage} separate key`,
+        ).toBe(200)
+      }
+    }
+    const reserved = await request.post('/api/rate-limiter/request', {
+      headers,
+      data: {
+        method: 'GET',
+        path: '/',
+        headers: { 'X-Forwarded-For': '1.2.3.4' },
+        body: '',
+        client: 0,
+      },
+    })
+    expect(reserved.status()).toBe(400)
+    const escaped = await request.post('/api/rate-limiter/request', {
+      headers,
+      data: {
+        method: 'GET',
+        path: '//example.com',
+        headers: {},
+        body: '',
+        client: 0,
+      },
+    })
+    expect(escaped.status()).toBe(400)
+  } finally {
+    await request.post('/api/rate-limiter/control', {
+      headers,
+      data: { action: 'stop', config: current },
+    })
+    await expect
+      .poll(
+        async () =>
+          (await (await request.get('/api/rate-limiter/control')).json()).phase,
+        { timeout: 30000 },
+      )
+      .toBe('stopped')
+  }
+})
+
+test('proxy mode runs with defaults and displays the active sample URL', async ({
   page,
 }) => {
-  await page.goto('/system-design/rate-limiter/fixed-window')
-  await page.getByLabel('Backend website URL').fill('javascript:alert(1)')
-  await page.getByRole('button', { name: 'Apply to diagram' }).click()
+  await page.goto('/system-design/rate-limiter/proxy-mode')
   await expect(
-    page
-      .getByRole('region', { name: 'Your website & policies' })
-      .getByRole('alert'),
-  ).toContainText('HTTP or HTTPS')
-  await expect(
-    page.getByRole('button', { name: 'Inspect Backend service' }),
-  ).toContainText('hiteshsolanki.com')
-  await page.getByLabel('Backend website URL').fill('https://example.com')
-  await page
-    .getByLabel('Requests per window · rule 1', { exact: true })
-    .fill('0')
-  await page.getByRole('button', { name: 'Apply to diagram' }).click()
-  await expect(
-    page
-      .getByRole('region', { name: 'Your website & policies' })
-      .getByRole('alert'),
-  ).toContainText('positive integer')
-  await page
-    .getByLabel('Requests per window · rule 1', { exact: true })
-    .fill('2')
-  await page
-    .getByLabel('Maximum identities · rule 1', { exact: true })
-    .fill('1')
-  await page.getByRole('button', { name: 'Apply to diagram' }).click()
-  await page.getByRole('button', { name: 'Simulate request' }).click()
-  await page
-    .getByLabel('Example ip address', { exact: true })
-    .fill('203.0.113.11')
-  await page.getByRole('button', { name: 'Simulate request' }).click()
-  await expect(page.getByRole('status')).toContainText(
-    '503 · Identity capacity reached',
+    page.getByRole('heading', { name: 'Try the proxy locally' }),
+  ).toBeVisible()
+  await expect(page.getByLabel('Request path', { exact: true })).toHaveValue(
+    '/',
   )
+  await expect(page.getByLabel('Active request URL')).toHaveValue('')
   await page
-    .getByLabel('Example ip address', { exact: true })
-    .fill('203.0.113.10')
-  await expect(page.getByTestId('remaining-allowance')).toHaveText(
-    '1 / 2 remaining',
-  )
-  await page.getByRole('button', { name: 'Simulate request' }).click()
-  await expect(page.getByRole('status')).toContainText('200 · Forwarded')
-  await page.getByRole('button', { name: 'Reset window' }).click()
-  await page.getByLabel('Example ip address', { exact: true }).fill('invalid')
-  await page.getByRole('button', { name: 'Simulate request' }).click()
-  await expect(
-    page
-      .getByRole('region', { name: 'Walk through a request' })
-      .getByRole('alert'),
-  ).toContainText('valid example IPv4 or IPv6')
-  await page
-    .getByRole('combobox', { name: 'Storage', exact: true })
-    .selectOption('redis')
-  await expect(
-    page.getByRole('radio', { name: 'Redis', exact: true }),
-  ).toBeChecked()
-  await page.getByRole('button', { name: 'Add policy rule' }).click()
-  await page.getByRole('button', { name: 'Remove rule 2' }).click()
-  await expect(page.getByRole('button', { name: 'Remove rule 2' })).toHaveCount(
-    0,
-  )
+    .getByLabel('Algorithm', { exact: true })
+    .selectOption('token_bucket')
+  await page.getByRole('button', { name: 'Start Docker', exact: true }).click()
+  try {
+    await expect(
+      page.getByText('Docker is ready', { exact: true }),
+    ).toBeVisible({ timeout: 150000 })
+    await expect(page.getByLabel('Active request URL')).toHaveValue(
+      /http:\/\/127\.0\.0\.1:\d+\/$/,
+    )
+    await page
+      .getByRole('button', { name: 'Send request', exact: true })
+      .click()
+    await expect(page.getByRole('status')).toContainText('200')
+    await expect(page.getByLabel('Response body')).toContainText('/')
+    await page.getByLabel('Request path', { exact: true }).fill('/custom')
+    await page.getByRole('button', { name: 'Use sample request' }).click()
+    await expect(page.getByLabel('Request path', { exact: true })).toHaveValue(
+      '/',
+    )
+    await page
+      .getByLabel('Algorithm', { exact: true })
+      .selectOption('fixed_window')
+    await expect(
+      page.getByRole('button', { name: 'Send request', exact: true }),
+    ).toBeDisabled()
+    await expect(page.getByLabel('Active request URL')).toHaveValue('')
+  } finally {
+    await page.getByRole('button', { name: 'Stop', exact: true }).click()
+    await expect(
+      page.getByText('Start Docker to launch the proxy and sample API.', {
+        exact: true,
+      }),
+    ).toBeVisible({ timeout: 30000 })
+  }
 })

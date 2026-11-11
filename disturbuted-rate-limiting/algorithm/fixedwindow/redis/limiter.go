@@ -12,6 +12,7 @@ import (
 
 	ratelimit "github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting"
 	"github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/algorithm/fixedwindow"
+	"github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/internal/redisutil"
 	redisclient "github.com/redis/go-redis/v9"
 )
 
@@ -89,7 +90,7 @@ func (l *Limiter) Evaluate(ctx context.Context, key string) (ratelimit.Decision,
 	}
 	ctx, cancel := context.WithTimeout(ctx, l.config.Timeout)
 	defer cancel()
-	values, err := runOnce(ctx, l.client, script, []string{l.key, l.key + ":config"}, key, l.config.Limit, l.config.Window.Milliseconds(), l.config.MaxKeys, l.signature).Int64Slice()
+	values, err := redisutil.RunOnce(ctx, l.client, script, source, []string{l.key, l.key + ":config"}, key, l.config.Limit, l.config.Window.Milliseconds(), l.config.MaxKeys, l.signature).Int64Slice()
 	if err != nil {
 		return ratelimit.Decision{}, fmt.Errorf("redis limiter: decision failed: %w", err)
 	}
@@ -135,27 +136,4 @@ func (l *Limiter) Usage(ctx context.Context) (float64, error) {
 		count = 3
 	}
 	return float64(count-3) / float64(l.config.MaxKeys), err
-}
-
-// nonRetryCmd also disables Cluster's retry loop on ambiguous I/O failures.
-// MOVED/ASK and NOSCRIPT responses are safe: the script did not execute there.
-type nonRetryCmd struct{ *redisclient.Cmd }
-
-func (*nonRetryCmd) NoRetry() bool { return true }
-func runOnce(ctx context.Context, client redisclient.UniversalClient, script *redisclient.Script, keys []string, args ...any) *redisclient.Cmd {
-	invoke := func(command, code string) *redisclient.Cmd {
-		argv := []any{command, code, len(keys)}
-		for _, key := range keys {
-			argv = append(argv, key)
-		}
-		argv = append(argv, args...)
-		cmd := &nonRetryCmd{redisclient.NewCmd(ctx, argv...)}
-		_ = client.Process(ctx, cmd)
-		return cmd.Cmd
-	}
-	cmd := invoke("evalsha", script.Hash())
-	if redisclient.HasErrorPrefix(cmd.Err(), "NOSCRIPT") {
-		return invoke("eval", source)
-	}
-	return cmd
 }

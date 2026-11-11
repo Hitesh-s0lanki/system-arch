@@ -39,10 +39,14 @@ export function AppSidebar() {
   const { state, setOpen, setOpenMobile } = useSidebar()
   const rateLimiterLinks = [
     { label: 'Overview', href: '/system-design/rate-limiter' },
+    { label: 'Algorithms', href: '/system-design/rate-limiter/algorithms' },
     { label: 'Installation guide', href: '/system-design/rate-limiter/docs' },
+    { label: 'Proxy Mode', href: '/system-design/rate-limiter/proxy-mode' },
+    { label: 'SDK Mode', href: '/system-design/rate-limiter/sdk-mode' },
+    { label: 'Gateway Mode', href: '/system-design/rate-limiter/gateway-mode' },
     {
-      label: 'Fixed Window Counter',
-      href: '/system-design/rate-limiter/fixed-window',
+      label: 'Distributed Mode',
+      href: '/system-design/rate-limiter/distributed-mode',
     },
   ]
   return (

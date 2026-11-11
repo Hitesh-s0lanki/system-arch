@@ -1,4 +1,4 @@
-.PHONY: test verify integration benchmark
+.PHONY: test verify integration benchmark test-sliding-window
 
 test:
 	go test -race ./...
@@ -16,3 +16,32 @@ integration:
 
 benchmark:
 	go test -run '^$$' -bench . -benchmem ./tests/algorithm/fixedwindow
+
+# Starts and cleans up a temporary Docker Redis unless REDIS_TEST_URL is supplied.
+test-sliding-window:
+	./tests/slidingwindow/run.sh
+
+# Uses a disposable Docker Redis; LEAKY_LATENCY=1 also writes latency percentiles.
+.PHONY: test-leaky-bucket
+test-leaky-bucket:
+	./tests/leakybucket/run.sh
+
+# Starts and cleans up temporary Redis unless REDIS_TEST_URL is supplied.
+.PHONY: test-sliding-counter
+test-sliding-counter:
+	./tests/slidingcounter/run.sh
+
+.PHONY: test-token-bucket
+test-token-bucket:
+	./tests/tokenbucket/run.sh
+
+# Measure all algorithms, then export the validated report for the algorithms page.
+.PHONY: benchmark-latency
+benchmark-latency:
+	./tests/latency/run.sh
+
+# Build once, then exercise the runtime image in isolated RAM/Redis Compose stacks.
+.PHONY: test-docker
+test-docker:
+	docker build --target runtime -t rate-limiter:ci .
+	RATE_LIMIT_IMAGE=rate-limiter:ci python3 tests/docker/smoke.py

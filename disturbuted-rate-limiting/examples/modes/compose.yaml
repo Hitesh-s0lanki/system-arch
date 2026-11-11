@@ -1,0 +1,42 @@
+x-app: &app
+  build:
+    context: ../..
+    dockerfile: examples/modes/Dockerfile
+  read_only: true
+  cap_drop: [ALL]
+  security_opt: [no-new-privileges:true]
+  mem_limit: 96m
+  pids_limit: 64
+  networks: [demo]
+
+services:
+  gateway:
+    <<: *app
+    environment:
+      DEMO_MODE: ${DEMO_MODE:?Choose sdk or gateway}
+      DEMO_ROLE: gateway
+    ports:
+      - "127.0.0.1:${DEMO_PORT:?Choose a local port}:8080"
+    depends_on:
+      auth: {condition: service_healthy}
+      ads: {condition: service_healthy}
+      keywords: {condition: service_healthy}
+  auth:
+    <<: *app
+    environment:
+      DEMO_MODE: ${DEMO_MODE}
+      DEMO_ROLE: auth
+  ads:
+    <<: *app
+    environment:
+      DEMO_MODE: ${DEMO_MODE}
+      DEMO_ROLE: ads
+  keywords:
+    <<: *app
+    environment:
+      DEMO_MODE: ${DEMO_MODE}
+      DEMO_ROLE: keywords
+
+networks:
+  demo:
+    internal: true

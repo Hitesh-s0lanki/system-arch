@@ -1,4 +1,4 @@
-// Package proxyapp wires configurable routes to a fixed-window reverse proxy.
+// Package proxyapp wires configurable routes to a rate-limited reverse proxy.
 package proxyapp
 
 import (
@@ -25,6 +25,14 @@ import (
 
 	"github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/algorithm/fixedwindow"
 	rediswindow "github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/algorithm/fixedwindow/redis"
+	"github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/algorithm/leakybucket"
+	redisleaky "github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/algorithm/leakybucket/redis"
+	"github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/algorithm/slidingcounter"
+	rediscounter "github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/algorithm/slidingcounter/redis"
+	"github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/algorithm/slidingwindow"
+	redissliding "github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/algorithm/slidingwindow/redis"
+	"github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/algorithm/tokenbucket"
+	redistoken "github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/algorithm/tokenbucket/redis"
 	"github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/auth"
 	"github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/identity"
 	"github.com/Hitesh-s0lanki/system-arch/distributed-rate-limiting/internal/httpserver"
@@ -37,7 +45,7 @@ import (
 type App struct {
 	draining        atomic.Bool
 	handler         http.Handler
-	ram             []*fixedwindow.Limiter
+	ram             []interface{ CleanupExpired() int }
 	redis           redisclient.UniversalClient
 	readyChecks     []func(context.Context) error
 	metrics         *telemetry.Metrics
@@ -155,6 +163,13 @@ func New(ctx context.Context, config Config, credentials []auth.Credential) (res
 	var bindings []service.Binding
 	registered := make(map[string]Route)
 	for _, route := range config.Routes {
+		if route.Algorithm == "" {
+			route.Algorithm = "fixed_window"
+		}
+		if route.Algorithm != "fixed_window" && route.Algorithm != "sliding_window_log" && route.Algorithm != "sliding_window_counter" && route.Algorithm != "token_bucket" && route.Algorithm != "leaky_bucket" {
+			return nil, fmt.Errorf("proxy config: algorithm must be fixed_window, sliding_window_log, sliding_window_counter, token_bucket, or leaky_bucket")
+		}
+
 		if route.Revision == "" {
 			route.Revision = "v1"
 		}
@@ -174,7 +189,7 @@ func New(ctx context.Context, config Config, credentials []auth.Credential) (res
 			return nil, fmt.Errorf("proxy config: invalid window")
 		}
 		if previous, exists := registered[route.Policy.ID]; exists {
-			if previous.Revision != route.Revision || previous.Policy != route.Policy || previous.Limit != route.Limit || previous.Window != route.Window || previous.MaxKeys != route.MaxKeys {
+			if previous.Capacity != route.Capacity || previous.Algorithm != route.Algorithm || previous.Revision != route.Revision || previous.Policy != route.Policy || previous.Limit != route.Limit || previous.Window != route.Window || previous.MaxKeys != route.MaxKeys {
 				return nil, fmt.Errorf("proxy config: policy %q has inconsistent settings", route.Policy.ID)
 			}
 			continue
@@ -189,8 +204,23 @@ func New(ctx context.Context, config Config, credentials []auth.Credential) (res
 		for _, tenant := range tenantIDs {
 			var limiter service.Limiter
 			if a.redis != nil {
-				var remote *rediswindow.Limiter
-				remote, err = rediswindow.New(a.redis, rediswindow.Config{PolicyID: route.Policy.ID, Namespace: config.Storage.Namespace, Limit: route.Limit, Window: window, MaxKeys: route.MaxKeys, Timeout: redisTimeout, Revision: route.Revision, TenantID: tenant, Semantics: fmt.Sprintf("%s:%t", route.Policy.Identity, route.Policy.PerRoute)})
+				var remote interface {
+					service.Limiter
+					Ready(context.Context) error
+					Usage(context.Context) (float64, error)
+				}
+				remoteConfig := rediswindow.Config{PolicyID: route.Policy.ID, Namespace: config.Storage.Namespace, Limit: route.Limit, Window: window, MaxKeys: route.MaxKeys, Timeout: redisTimeout, Revision: route.Revision, TenantID: tenant, Semantics: fmt.Sprintf("%s:%t", route.Policy.Identity, route.Policy.PerRoute)}
+				if route.Algorithm == "leaky_bucket" {
+					remote, err = redisleaky.New(a.redis, redisleaky.Config{Config: remoteConfig, Capacity: route.Capacity})
+				} else if route.Algorithm == "sliding_window_counter" {
+					remote, err = rediscounter.New(a.redis, remoteConfig)
+				} else if route.Algorithm == "sliding_window_log" {
+					remote, err = redissliding.New(a.redis, remoteConfig)
+				} else if route.Algorithm == "token_bucket" {
+					remote, err = redistoken.New(a.redis, redistoken.Config{Config: remoteConfig, Capacity: route.Capacity})
+				} else {
+					remote, err = rediswindow.New(a.redis, remoteConfig)
+				}
 				if err == nil {
 					limiter = remote
 					if err = remote.Ready(ctx); err == nil {
@@ -199,8 +229,23 @@ func New(ctx context.Context, config Config, credentials []auth.Credential) (res
 					}
 				}
 			} else {
-				var local *fixedwindow.Limiter
-				local, err = fixedwindow.New(fixedwindow.Config{Limit: route.Limit, Window: window, MaxKeys: route.MaxKeys})
+				var local interface {
+					service.Limiter
+					CleanupExpired() int
+					Usage() float64
+				}
+				localConfig := fixedwindow.Config{Limit: route.Limit, Window: window, MaxKeys: route.MaxKeys}
+				if route.Algorithm == "leaky_bucket" {
+					local, err = leakybucket.New(leakybucket.Config{Limit: route.Limit, Window: window, MaxKeys: route.MaxKeys, Capacity: route.Capacity})
+				} else if route.Algorithm == "sliding_window_counter" {
+					local, err = slidingcounter.New(localConfig)
+				} else if route.Algorithm == "sliding_window_log" {
+					local, err = slidingwindow.New(localConfig)
+				} else if route.Algorithm == "token_bucket" {
+					local, err = tokenbucket.New(tokenbucket.Config{Limit: route.Limit, Window: window, Capacity: route.Capacity, MaxKeys: route.MaxKeys})
+				} else {
+					local, err = fixedwindow.New(localConfig)
+				}
 				if err == nil {
 					limiter = local
 					a.ram = append(a.ram, local)

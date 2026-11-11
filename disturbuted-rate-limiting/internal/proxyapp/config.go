@@ -22,12 +22,14 @@ type StorageConfig struct {
 }
 
 type Route struct {
-	Pattern  string        `json:"pattern"`
-	Revision string        `json:"revision"`
-	Policy   policy.Policy `json:"policy"`
-	Limit    int           `json:"limit"`
-	Window   string        `json:"window"`
-	MaxKeys  int           `json:"max_keys"`
+	Capacity  int           `json:"capacity,omitempty"`
+	Algorithm string        `json:"algorithm,omitempty"`
+	Pattern   string        `json:"pattern"`
+	Revision  string        `json:"revision"`
+	Policy    policy.Policy `json:"policy"`
+	Limit     int           `json:"limit"`
+	Window    string        `json:"window"`
+	MaxKeys   int           `json:"max_keys"`
 }
 
 // Config is a versioned proxy configuration. Secrets may be supplied through
